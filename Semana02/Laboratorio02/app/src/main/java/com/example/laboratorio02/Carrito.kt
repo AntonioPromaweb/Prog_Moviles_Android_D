@@ -23,9 +23,35 @@ class ProductoFisico(
     }
 }
 
+class CarritoDeCompras {
+    private val productos = mutableListOf<ProductoBase>()
+
+    fun agregarProducto(producto: ProductoBase) {
+        productos.add(producto)
+    }
+
+    fun obtenerProductos(): List<ProductoBase> = productos
+
+    fun calcularSubtotalTotal(): Double {
+        return productos.sumOf { it.calcularSubtotal() }
+    }
+
+    fun calcularIGV(): Double {
+        return calcularSubtotalTotal() * 0.18
+    }
+
+    fun calcularTotal(): Double {
+        return calcularSubtotalTotal() + calcularIGV()
+    }
+}
+
 fun main() {
+    val cliente = "Luis Vasquez"
+    val carrito = CarritoDeCompras()
+
     println("==")
     println("CARRITO DE COMPRAS - POO")
     println("TIENDA TECSUP")
     println("==")
+    println("Cliente: $cliente")
 }
