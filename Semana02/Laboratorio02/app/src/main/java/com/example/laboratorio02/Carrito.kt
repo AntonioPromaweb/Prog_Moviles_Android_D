@@ -43,6 +43,19 @@ class CarritoDeCompras {
     fun calcularTotal(): Double {
         return calcularSubtotalTotal() + calcularIGV()
     }
+
+    fun calcularDescuento(): Double {
+        val total = calcularTotal()
+        return when {
+            total > 5000 -> total * 0.10
+            total > 3000 -> total * 0.05
+            else -> 0.0
+        }
+    }
+
+    fun obtenerProductoMasCaro(): ProductoBase? {
+        return productos.maxByOrNull { it.getPrecioBase() }
+    }
 }
 
 fun main() {
@@ -60,6 +73,10 @@ fun main() {
     carrito.agregarProducto(ProductoFisico("Audifonos Sony", 120.0, 1))
     carrito.agregarProducto(ProductoFisico("USB Kingston 64GB", 25.0, 3))
 
+    for (p in carrito.obtenerProductos()) {
+        println("Producto agregado: ${p.getNombre()}")
+    }
+
     println("DETALLE DEL CARRITO")
     var idx = 1
     for (p in carrito.obtenerProductos()) {
@@ -69,4 +86,29 @@ fun main() {
             idx++
         }
     }
+
+    val subtotal = carrito.calcularSubtotalTotal()
+    val igv = carrito.calcularIGV()
+    val total = carrito.calcularTotal()
+    val cantTotal = carrito.obtenerProductos().sumOf { (it as ProductoFisico).getCantidad() }
+
+    println(String.format("%-22s: %d", "Cantidad de productos", cantTotal))
+    println(String.format("%-22s: S/ %8.2f", "Subtotal", subtotal))
+    println(String.format("%-22s: S/ %8.2f", "IGV (18%)", igv))
+    println(String.format("%-22s: S/ %8.2f", "TOTAL A PAGAR", total))
+
+    val masCaro = carrito.obtenerProductoMasCaro()
+    if (masCaro != null) {
+        println("Producto mas caro: ${masCaro.getNombre()} " + String.format("(S/%.2f)", masCaro.getPrecioBase()))
+    }
+
+    val descuento = carrito.calcularDescuento()
+    val totalConDescuento = total - descuento
+
+    if (descuento > 0) {
+        println("Descuento aplicado: 5% por compra mayor a S/ 3000")
+        println(String.format("%-22s: S/ %8.2f", "TOTAL CON DESCUENTO", totalConDescuento))
+    }
+
+    println("Gracias por su compra, $cliente!")
 }
