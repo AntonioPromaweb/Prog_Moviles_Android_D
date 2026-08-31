@@ -37,6 +37,48 @@ class Vehiculo(
         val descuento = if (esClienteFrecuente) subtotal * 0.10 else 0.0
         return subtotal - descuento
     }
+
+    fun generarBoleta() {
+        val tarifaBase = obtenerTarifaBase()
+        println("\n==============================================")
+        println("             BOLETA DE ESTACIONAMIENTO        ")
+        println("==============================================")
+        println("Cliente: $nombreCliente")
+        println("Placa  : $placa")
+        println("Tipo   : $tipo")
+        println("Horas  : $horas")
+        println("----------------------------------------------")
+        println(String.format("%-6s | %-11s | %-9s | %-10s", "Hora", "Tarifa Base", "% Recargo", "Importe"))
+        println("----------------------------------------------")
+
+        var subtotal = 0.0
+        for (h in 1..horas) {
+            val recargoPorcentaje = when {
+                h <= 2 -> 0
+                h <= 5 -> 20
+                else -> 50
+            }
+            val recargoDecimal = recargoPorcentaje / 100.0
+            val costoHora = tarifaBase * (1 + recargoDecimal)
+            subtotal += costoHora
+
+            println(
+                String.format(
+                    "Hora %-2d | S/ %-9.2f | %-8s | S/ %-8.2f",
+                    h, tarifaBase, "$recargoPorcentaje%", costoHora
+                )
+            )
+        }
+
+        val descuento = if (esClienteFrecuente) subtotal * 0.10 else 0.0
+        val total = subtotal - descuento
+
+        println("----------------------------------------------")
+        println(String.format("Subtotal:            S/ %.2f", subtotal))
+        println(String.format("Descuento (10%%):     S/ %.2f", descuento))
+        println(String.format("Monto Total a Pagar: S/ %.2f", total))
+        println("==============================================\n")
+    }
 }
 
 fun main() {
@@ -78,6 +120,5 @@ fun main() {
     val esFrecuente = esFrecuenteInput.equals("S", ignoreCase = true)
 
     val vehiculo = Vehiculo(placa, tipo, horas, esFrecuente, nombre)
-    println("\n[OK] Vehículo registrado.")
-    println(String.format("Monto preliminar a pagar: S/ %.2f", vehiculo.calcularTotal()))
+    vehiculo.generarBoleta()
 }
