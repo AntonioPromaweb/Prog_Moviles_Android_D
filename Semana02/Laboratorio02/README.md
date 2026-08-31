@@ -1,49 +1,47 @@
-# Laboratorio 02: Carrito de Compras en Kotlin (Versión con IA)
+# Sistema de Gestión de Estacionamiento en Kotlin
 
-**Curso:** Programación Móvil Android  
-**Estudiante:** Luis Antonio Vasquez Flores
-
----
-
-## Explicación del Proyecto
-Programa desarrollado en Kotlin refactorizado bajo el paradigma de la Programación Orientada a Objetos (POO). El sistema administra un carrito de compras, calcula subtotales, IGV (18%), total a pagar, descuentos aplicados mediante `when` y la detección del producto más caro.
+Este proyecto implementa un sistema de control de estacionamiento en consola utilizando Kotlin. La aplicación calcula tarifas según el tipo de vehículo, aplica recargos por la cantidad de horas estacionado y otorga un descuento para clientes frecuentes, finalizando con la emisión de una boleta detallada.
 
 ---
 
-## Prompt Utilizado para la IA
+## Prompts Utilizados y Desarrollo por Fases
 
-[ROL]  
-Eres un desarrollador Senior especializado en Kotlin y Programación Orientada a Objetos (POO), con experiencia dictando laboratorios universitarios.
+### 🔹 Prompt 1: Definición de la Clase Vehículo y Validaciones
+**Prompt:**
+> Crea la clase Vehículo en Kotlin para un sistema de estacionamiento. La clase debe manejar solo tres tipos de vehículos: Moto, Auto y Camioneta. Implementa los atributos: placa (String), tipo (String: Moto, Auto, Camioneta), horas (Entero, con validación para que no sea menor a 1), es_cliente_frecuente (Booleano) y nombre_cliente (String). Incluye el constructor que evite un registro con menos de 1 hora. Todo esto es una aplicación de terminal, no uses interfaces gráficas.
 
-[CONTEXTO]  
-Proyecto: Carrito de compras en Kotlin para el Laboratorio 02 del curso de Programación Móvil Android. Se requiere refactorizar el código base tradicional a una arquitectura robusta basada en POO.
-
-[TAREA]  
-Refactoriza el programa del carrito de compras en Kotlin aplicando de forma explícita los 4 pilares de la Programación Orientada a Objetos (POO): Abstracción, Encapsulamiento, Herencia y Polimorfismo.
-
-1. **Abstracción:** Crea una clase base abstracta `ProductoBase` con las propiedades esenciales y la firma del método abstracto `calcularSubtotal()`.
-2. **Encapsulamiento:** Oculta los atributos internos (`private`) y expón su lectura de manera controlada mediante métodos *getter*.
-3. **Herencia:** Define la subclase `ProductoFisico` que extienda de `ProductoBase`.
-4. **Polimorfismo:** Sobrescribe (`override`) el método `calcularSubtotal()` en la subclase y centraliza la lógica en la clase gestora `CarritoDeCompras`.
-
-[RESTRICCIONES]
-* Kotlin idiomático y código limpio.
-* Formateo del reporte en columnas alineadas utilizando `String.format`.
-* Implementación de cálculo de IGV (18%), descuentos por rangos con `when` y búsqueda del producto de mayor precio con `maxByOrNull`.
+**Resultado:**
+![Resultado 1](Resultado1.png)
 
 ---
 
-## Estructura del Prompt
-* **Rol:** Definición del perfil experto en Kotlin y docente de POO.
-* **Contexto:** Identificación de la actividad de laboratorio y objetivo de migración.
-* **Instrucción / Tarea:** Especificación técnica de cada pilar de POO a implementar.
-* **Restricciones:** Reglas de formateo, uso de funciones de orden superior y estándares del lenguaje.
+### 🔹 Prompt 2: Lógica de Negocio y Cálculo de Tarifas
+**Prompt:**
+> Extiende la clase Vehículo agregando la lógica de negocio para calcular el costo total del estacionamiento según estas reglas:
+> - Tarifas base por hora: Moto (S/ 2.00), Auto (S/ 4.00), Camioneta (S/ 10.00).
+> - Tarifas por horas: 1-2 Horas (0% de recargo), 3-5 Horas (20% de recargo por hora), 6ta Hora en adelante (50% de recargo por hora adicional).
+> - Descuento por Frecuencia: Si es_cliente_frecuente es true, aplica un 10% de descuento sobre el monto total final.
+> - Implementa el método calcular_total() detallando el monto por cada hora transcurrida.
+
+**Resultado:**
+![Resultado 2](Resultado2.png)
 
 ---
 
-## Demostración de los 4 Pilares de la POO
+### 🔹 Prompt 3: Generación de Boleta Detallada
+**Prompt:**
+> Implementa un método generar_boleta() en la clase Vehículo que imprima en consola un comprobante detallado con el siguiente formato:
+> - Datos: Nombre del cliente, placa y tipo de vehículo.
+> - Tabla de Tarifa por hora: Muestra la columna Hora, Tarifa Base, %Recargo e Importe por hora.
+> - Resumen de pago: Subtotal, descuento aplicado y Monto Total a pagar.
 
-* **Abstracción:** Clase abstracta `ProductoBase` que modela las características esenciales de un producto y declara `abstract fun calcularSubtotal(): Double`.
-* **Encapsulamiento:** Definición de propiedades `private val nombre`, `private val precioBase` y la lista privada `productos` dentro de `CarritoDeCompras`, protegiendo el estado directo del objeto.
-* **Herencia:** La clase `ProductoFisico` hereda (`:`) de `ProductoBase`, reutilizando su lógica base e integrando la propiedad `cantidad`.
-* **Polimorfismo:** Implementación concreta mediante `override fun calcularSubtotal()` en `ProductoFisico`, permitiendo que la clase `CarritoDeCompras` procese colecciones de productos sin acoplarse a un tipo específico.
+**Resultado:**
+![Resultado 3](Resultado3.png)
+
+---
+
+## Requisitos de Ejecución
+
+- **Lenguaje:** Kotlin 1.9+
+- **Entorno de Desarrollo:** Android Studio / IntelliJ IDEA
+- **JDK:** Java 17 o superior
