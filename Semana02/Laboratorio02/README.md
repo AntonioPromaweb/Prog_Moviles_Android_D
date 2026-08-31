@@ -37,5 +37,6 @@ Este proyecto implementa un sistema de control de estacionamiento en consola uti
 - **Entorno de Desarrollo:** Android Studio / IntelliJ IDEA
 - **JDK:** Java 17 o superior
 
-<img width="1919" height="1018" alt="image" src="https://github.com/user-attachments/assets/dc5c9eb4-79a9-4913-91eb-f322f7804464" />
+<img width="637" height="336" alt="image" src="https://github.com/user-attachments/assets/47eb31ff-4831-431f-a5c8-f794cba697d2" />
+
 <img width="523" height="571" alt="image" src="https://github.com/user-attachments/assets/6cf5fe6b-50cb-4bf6-b637-a67106d813f0" />
