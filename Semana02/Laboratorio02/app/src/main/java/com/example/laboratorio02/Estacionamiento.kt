@@ -38,8 +38,14 @@ class Vehiculo(
             subtotal += costoHora
         }
 
-        val descuento = if (esClienteFrecuente) subtotal * 0.10 else 0.0
-        return subtotal - descuento
+        val igv = subtotal * 0.18
+        val totalConIgv = subtotal + igv
+
+        val descFrecuente = if (esClienteFrecuente) totalConIgv * 0.10 else 0.0
+        val totalDespuesFrecuente = totalConIgv - descFrecuente
+
+        val descMonto = if (totalDespuesFrecuente > 500.0) totalDespuesFrecuente * 0.20 else 0.0
+        return totalDespuesFrecuente - descMonto
     }
 
     fun generarBoleta() {
@@ -75,13 +81,25 @@ class Vehiculo(
             )
         }
 
-        val descuento = if (esClienteFrecuente) subtotal * 0.10 else 0.0
-        val total = subtotal - descuento
+        val igv = subtotal * 0.18
+        val totalConIgv = subtotal + igv
+
+        val descFrecuente = if (esClienteFrecuente) totalConIgv * 0.10 else 0.0
+        val totalDespuesFrecuente = totalConIgv - descFrecuente
+
+        val descMonto = if (totalDespuesFrecuente > 500.0) totalDespuesFrecuente * 0.20 else 0.0
+        val totalFinal = totalDespuesFrecuente - descMonto
 
         println("----------------------------------------------")
-        println(String.format("Subtotal:            S/ %.2f", subtotal))
-        println(String.format("Descuento (10%%):     S/ %.2f", descuento))
-        println(String.format("Monto Total a Pagar: S/ %.2f", total))
+        println(String.format("%-25s: S/ %.2f", "Subtotal", subtotal))
+        println(String.format("%-25s: S/ %.2f", "IGV (18%)", igv))
+        if (descFrecuente > 0) {
+            println(String.format("%-25s: S/ %.2f", "Desc. Cliente Frec. (10%)", descFrecuente))
+        }
+        if (descMonto > 0) {
+            println(String.format("%-25s: S/ %.2f", "Desc. Monto > S/500 (20%)", descMonto))
+        }
+        println(String.format("%-25s: S/ %.2f", "Monto Total a Pagar", totalFinal))
         println("==============================================\n")
     }
 }
