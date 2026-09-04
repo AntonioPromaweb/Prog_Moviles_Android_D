@@ -1,3 +1,5 @@
+package com.example.laboratorio02
+
 import java.util.Scanner
 
 class Vehiculo(
@@ -14,8 +16,9 @@ class Vehiculo(
     private fun obtenerTarifaBase(): Double {
         return when (tipo.lowercase()) {
             "moto" -> 2.0
-            "auto" -> 4.0
+            "auto", "vehiculo" -> 4.0
             "camioneta" -> 10.0
+            "trailer" -> 20.0
             else -> 0.0
         }
     }
@@ -94,16 +97,18 @@ fun main() {
 
     println("Seleccione el tipo de vehículo:")
     println("1. Moto (S/ 2.00/h)")
-    println("2. Auto (S/ 4.00/h)")
+    println("2. Vehículo / Auto (S/ 4.00/h)")
     println("3. Camioneta (S/ 10.00/h)")
-    print("Opción (1-3): ")
+    println("4. Trailer (S/ 20.00/h)")
+    print("Opción (1-4): ")
     val opcionTipo = scanner.nextInt()
 
     val tipo = when (opcionTipo) {
         1 -> "Moto"
-        2 -> "Auto"
+        2 -> "Vehiculo"
         3 -> "Camioneta"
-        else -> "Auto"
+        4 -> "Trailer"
+        else -> "Vehiculo"
     }
 
     var horas = 0
