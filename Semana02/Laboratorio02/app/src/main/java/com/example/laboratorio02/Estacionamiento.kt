@@ -31,6 +31,7 @@ class Vehiculo(
             val recargo = when {
                 h <= 2 -> 0.0
                 h <= 5 -> 0.20
+                h <= 10 -> 0.40
                 else -> 0.50
             }
             val costoHora = tarifaBase * (1 + recargo)
@@ -59,6 +60,7 @@ class Vehiculo(
             val recargoPorcentaje = when {
                 h <= 2 -> 0
                 h <= 5 -> 20
+                h <= 10 -> 40
                 else -> 50
             }
             val recargoDecimal = recargoPorcentaje / 100.0
