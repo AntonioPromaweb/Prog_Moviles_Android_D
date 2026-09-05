@@ -16,6 +16,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -50,6 +51,7 @@ fun PantallaRegistro(modifier: Modifier = Modifier) {
     var precio by remember { mutableStateOf("") }
     var cantidad by remember { mutableStateOf("") }
     var mostrarResumen by remember { mutableStateOf(false) }
+    var mensajeError by remember { mutableStateOf("") }
 
     Column(
         modifier = modifier
@@ -94,14 +96,54 @@ fun PantallaRegistro(modifier: Modifier = Modifier) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        Button(
-            onClick = { mostrarResumen = true },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("AGREGAR PRODUCTO")
+        Row(modifier = Modifier.fillMaxWidth()) {
+            Button(
+                onClick = {
+                    val precioNum = precio.toDoubleOrNull()
+                    val cantidadNum = cantidad.toIntOrNull()
+
+                    if (nombre.isBlank() || precio.isBlank() || cantidad.isBlank()) {
+                        mensajeError = "Por favor, completa todos los campos."
+                        mostrarResumen = false
+                    } else if (precioNum == null || cantidadNum == null) {
+                        mensajeError = "Ingresa valores numéricos válidos."
+                        mostrarResumen = false
+                    } else {
+                        mensajeError = ""
+                        mostrarResumen = true
+                    }
+                },
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("AGREGAR")
+            }
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            OutlinedButton(
+                onClick = {
+                    nombre = ""
+                    precio = ""
+                    cantidad = ""
+                    mostrarResumen = false
+                    mensajeError = ""
+                },
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("LIMPIAR")
+            }
         }
 
         Spacer(modifier = Modifier.height(24.dp))
+
+        if (mensajeError.isNotEmpty()) {
+            Text(
+                text = mensajeError,
+                color = Color.Red,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold
+            )
+        }
 
         if (mostrarResumen) {
             val precioNum = precio.toDoubleOrNull() ?: 0.0
