@@ -115,7 +115,8 @@ fun PantallaRegistro(modifier: Modifier = Modifier) {
                 },
                 modifier = Modifier.weight(1f)
             ) {
-                Text("AGREGAR")
+                // CAMBIO B2: Se reemplazó "AGREGAR" por "AGREGAR PRODUCTO"
+                Text("AGREGAR PRODUCTO")
             }
 
             Spacer(modifier = Modifier.width(16.dp))
