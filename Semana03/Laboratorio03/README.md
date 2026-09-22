@@ -12,9 +12,15 @@ Aplicación móvil desarrollada en Android Studio con Jetpack Compose que permit
 
 ## Capturas de Pantalla
 
-| Pantalla Vacía (Estado Inicial) | Producto Registrado |
-| :---: | :---: |
-| ![Estado Inicial](captura_inicial.png) | ![Producto Registrado](captura_registrado.png) |
+
+| ![Estado Inicial]
+
+<img width="836" height="729" alt="image" src="https://github.com/user-attachments/assets/d2f00bb3-adcc-40a8-89aa-9238ef946aac" />
+
+
+| ![Producto Registrado]
+
+<img width="832" height="747" alt="image" src="https://github.com/user-attachments/assets/622e52d5-cc80-4dce-bff8-3f4adb6337c2" />
 
 ---
 
