@@ -28,12 +28,11 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun PantallaCarrito(modifier: Modifier = Modifier) {
-    // Estados del formulario (Lab 03)
+
     var nombre by remember { mutableStateOf("") }
     var precio by remember { mutableStateOf("") }
     var cantidad by remember { mutableStateOf("") }
 
-    // Estado NUEVO (Lab 04): Lista observable de productos
     val productos = remember { mutableStateListOf<Producto>() }
 
     Column(
@@ -47,5 +46,51 @@ fun PantallaCarrito(modifier: Modifier = Modifier) {
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary
         )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        OutlinedTextField(
+            value = nombre,
+            onValueChange = { nombre = it },
+            label = { Text("Nombre del producto") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Row(modifier = Modifier.fillMaxWidth()) {
+            OutlinedTextField(
+                value = precio,
+                onValueChange = { precio = it },
+                label = { Text("Precio (S/)") },
+                modifier = Modifier.weight(1f)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            OutlinedTextField(
+                value = cantidad,
+                onValueChange = { cantidad = it },
+                label = { Text("Cantidad") },
+                modifier = Modifier.weight(1f)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = {
+                val precioNum = precio.toDoubleOrNull() ?: 0.0
+                val cantidadNum = cantidad.toIntOrNull() ?: 0
+                if (nombre.isNotBlank() && precioNum > 0 && cantidadNum > 0) {
+                    productos.add(Producto(nombre, precioNum, cantidadNum))
+                    // Limpiar formulario
+                    nombre = ""
+                    precio = ""
+                    cantidad = ""
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("AGREGAR")
+        }
     }
 }
