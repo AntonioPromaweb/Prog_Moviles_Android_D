@@ -12,12 +12,12 @@ Aplicación desarrollada en Android Studio con Kotlin y Jetpack Compose. Permite
 
 ### 1. Estado Inicial (Carrito Vacío)
 
-<img width="756" height="1459" alt="image" src="https://github.com/user-attachments/assets/aedc8708-192e-4d6d-9d46-8545ee2bbca6" />
+<img width="541" height="1120" alt="image" src="https://github.com/user-attachments/assets/f5d14180-08a3-47db-92a5-e989b5be7654" />
 
 
 ### 2. Estado con Productos Agregados y Totales
 
-<img width="731" height="1459" alt="image" src="https://github.com/user-attachments/assets/4267a364-035a-43c9-9387-6bfe9a79dcc9" />
+<img width="569" height="1132" alt="image" src="https://github.com/user-attachments/assets/cb6ec99d-77a9-468b-9bb1-b5f210a02dcc" />
 
 
 ---
