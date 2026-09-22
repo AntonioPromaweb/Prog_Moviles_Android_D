@@ -11,10 +11,14 @@ Aplicación desarrollada en Android Studio con Kotlin y Jetpack Compose. Permite
 ## Capturas de Pantalla
 
 ### 1. Estado Inicial (Carrito Vacío)
-*(Insertar captura de la pantalla vacía)*
+
+<img width="756" height="1459" alt="image" src="https://github.com/user-attachments/assets/aedc8708-192e-4d6d-9d46-8545ee2bbca6" />
+
 
 ### 2. Estado con Productos Agregados y Totales
-*(Insertar captura con productos agregados y cálculo de totales)*
+
+<img width="731" height="1459" alt="image" src="https://github.com/user-attachments/assets/4267a364-035a-43c9-9387-6bfe9a79dcc9" />
+
 
 ---
 
