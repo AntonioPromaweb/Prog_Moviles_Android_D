@@ -6,7 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -36,6 +36,10 @@ fun PantallaCarrito(modifier: Modifier = Modifier) {
     var cantidad by remember { mutableStateOf("") }
 
     val productos = remember { mutableStateListOf<Producto>() }
+
+    val subtotal = productos.sumOf { it.precio * it.cantidad }
+    val igv = subtotal * 0.18
+    val total = subtotal + igv
 
     Column(
         modifier = modifier
@@ -108,7 +112,7 @@ fun PantallaCarrito(modifier: Modifier = Modifier) {
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(productos) { prod ->
+            itemsIndexed(productos) { index, prod ->
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -120,15 +124,55 @@ fun PantallaCarrito(modifier: Modifier = Modifier) {
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Column {
+                        Column(modifier = Modifier.weight(1f)) {
                             Text(text = prod.nombre, fontWeight = FontWeight.Bold)
                             Text(text = "S/ ${prod.precio} x ${prod.cantidad}")
+                            Text(
+                                text = "Subtotal: S/ ${String.format("%.2f", prod.precio * prod.cantidad)}",
+                                style = MaterialTheme.typography.bodySmall
+                            )
                         }
-                        Text(
-                            text = "Subtotal: S/ ${String.format("%.2f", prod.precio * prod.cantidad)}",
-                            fontWeight = FontWeight.SemiBold
-                        )
+                        TextButton(
+                            onClick = { productos.removeAt(index) }
+                        ) {
+                            Text(
+                                text = "Eliminar",
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
                     }
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text("Subtotal:")
+                    Text("S/ ${String.format("%.2f", subtotal)}")
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text("IGV (18%):")
+                    Text("S/ ${String.format("%.2f", igv)}")
+                }
+                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text("Total a pagar:", fontWeight = FontWeight.Bold)
+                    Text("S/ ${String.format("%.2f", total)}", fontWeight = FontWeight.Bold)
                 }
             }
         }
