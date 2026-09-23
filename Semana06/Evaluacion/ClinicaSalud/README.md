@@ -71,3 +71,9 @@ Todo el estado de la aplicación se maneja con `remember` y `mutableStateOf`, **
 4. Ejecutar en un emulador o dispositivo físico (API 24+).
 
 ## Resultado Final
+
+<img width="604" height="1211" alt="image" src="https://github.com/user-attachments/assets/c32f2985-ad04-4e21-b38b-492419988514" />
+<img width="684" height="1459" alt="image" src="https://github.com/user-attachments/assets/27e3c1fc-dcca-43f0-ac83-15294a4582b8" />
+<img width="738" height="1459" alt="image" src="https://github.com/user-attachments/assets/34920eb2-4d36-4485-8dfc-dee92799520b" />
+<img width="695" height="1459" alt="image" src="https://github.com/user-attachments/assets/01ee046f-bcac-44f5-84d8-92f2abb44985" />
+<img width="701" height="1459" alt="image" src="https://github.com/user-attachments/assets/d687e9d4-6bc4-43f5-8ddf-2ace1b9da61f" />
