@@ -19,4 +19,3 @@ sealed class Screen(val route: String) {
     object MyAppointments : Screen(route = "myAppointments")
     object MedicalHistory : Screen(route = "medicalHistory")
 }
-}
