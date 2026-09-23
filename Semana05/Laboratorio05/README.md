@@ -29,56 +29,113 @@ Esta versión del Laboratorio 05 implementa un **Portal Académico** con un dise
 ## Promt del Proyecto
 
 Actúa como un desarrollador de Android con experiencia en diseño de interfaces usando Jetpack Compose y Material Design 3. Tengo una aplicación académica básica que necesita una renovación visual completa. Quiero que transformes su apariencia manteniendo intacta la funcionalidad y el flujo de navegación actual.
-Estilo visual general: Usa una paleta basada en tonos morados suaves. Para elementos sólidos (botones, títulos, íconos) usa un morado medio como #7C6BAF. Para cabeceras con degradado, usa una transición de morado claro (#9575CD) a morado más profundo (#5E35B1). Evita fondos de pantalla completa demasiado oscuros; prioriza la claridad y el contraste.
+
+Estilo visual general:
+Usa una paleta basada en tonos morados suaves. Para elementos sólidos (botones, títulos, íconos) usa un morado medio como #7C6BAF. Para cabeceras con degradado, usa una transición de morado claro (#9575CD) a morado más profundo (#5E35B1). Evita fondos de pantalla completa demasiado oscuros; prioriza la claridad y el contraste.
+
 Pantalla de Login - "Portal Académico":
+
 Tarjeta blanca centrada con esquinas redondeadas (20.dp) sobre un fondo con degradado lila suave.
+
 Título "Portal Académico" en morado oscuro, negrita, 26.sp, centrado.
+
 Subtítulo "Accede a tu cuenta" en gris, 14.sp.
+
 Campo "Correo Institucional" con ícono de sobre (Icons.Default.Email) a la izquierda, esquinas redondeadas.
+
 Campo "Contraseña" con ícono de candado (Icons.Default.Lock) a la izquierda y un ícono de ojo (Icons.Default.Visibility / VisibilityOff) a la derecha para alternar la visibilidad. Usa el ícono estándar de Material, no emojis.
+
 Botón "INICIAR SESIÓN" de ancho completo, fondo morado, texto blanco, esquinas redondeadas.
+
 Enlace inferior "¿Olvidaste tu contraseña?" en morado, centrado.
+
 Pantalla de Bienvenida - Home:
+
 Fondo con degradado vertical de morado medio (arriba) a morado claro (abajo).
+
 Todo el contenido debe estar centrado vertical y horizontalmente como un bloque compacto, con separación uniforme de 24-32.dp.
+
 Saludo "Bienvenido, Luis Vasquez" en blanco, negrita, 32.sp.
+
 Subtítulo "¿Qué deseas gestionar hoy?" en blanco semitransparente, 16.sp.
+
 Tarjeta 1: "Directorio de Alumnos" con ícono de grupo (Icons.Default.People) dentro de un círculo, subtítulo "Ver y gestionar estudiantes".
+
 Tarjeta 2: "Mi Perfil Académico" con ícono de persona (Icons.Default.Person), subtítulo "Datos personales y progreso".
+
 Enlace inferior "Cerrar Sesión Segura" en rojo, con ícono de salida (Icons.AutoMirrored.Filled.Logout), anclado en la parte baja.
+
 Pantalla de Lista - "Directorio de Alumnos":
+
 TopAppBar con fondo blanco, flecha de retroceso morada, título "Directorio de Alumnos" en morado oscuro, negrita.
+
 Lista con LazyColumn de tarjetas grises redondeadas.
+
 Cada ítem: avatar circular con la inicial del alumno, nombre en negrita negro, carrera en morado, flecha Icons.AutoMirrored.Filled.KeyboardArrowRight a la derecha.
+
 Alumnos: Juan León (Ingeniería de Sistemas), María García (Arquitectura), Carlos Pérez (Medicina), Ana López (Derecho), Luis Ramírez (Administración).
+
 Al hacer clic, navega al detalle con el itemId.
+
 Pantalla de Detalle - "Expediente Académico":
+
 TopAppBar blanca con flecha de retroceso y título "Expediente Académico" en morado oscuro.
+
 Cabecera grande con degradado morado medio a oscuro, esquinas inferiores redondeadas.
+
 Avatar circular con borde blanco, superpuesto parcialmente entre la cabecera morada y el fondo blanco.
+
 Nombre del alumno en negrita, carrera en morado.
+
 Tarjeta gris con filas de datos: ID Estudiante, Correo Electrónico, Facultad (cada uno con su ícono).
+
 Sección "Biografía" con un párrafo descriptivo.
+
 Pantalla de Perfil - "Configuración de Perfil":
+
 TopAppBar blanca o muy clara con flecha de retroceso y título "Configuración de Perfil" en morado oscuro.
+
 Panel con degradado morado completo (sin división con blanco). El avatar circular debe estar totalmente contenido dentro de ese panel.
+
 Nombre "Luis Vasquez" en blanco, negrita, 20.sp.
+
 Sección "INFORMACIÓN PERSONAL": filas con ícono + etiqueta pequeña gris + valor en negrita:
+
 Nombre Completo: Luis Vasquez
+
 Correo: luis.vasquez@tecsup.edu.pe
+
 Teléfono: +51 987 654 321
+
 Sección "ACADÉMICO":
+
 Facultad/Carrera: Ingeniería de Software
+
 Campus: VI Ciclo
+
 Botón "Cerrar Sesión" anclado abajo, con fondo rosa claro, texto rojo y ícono de salida.
+
 Restricciones generales:
+
 Tipografía Material 3 (Roboto), con jerarquía clara entre títulos, subtítulos y texto secundario.
+
 Esquinas redondeadas en botones, tarjetas y campos.
+
 Todos los íconos deben ser de Material Design, nunca emojis.
+
 Ninguna TopAppBar debe ser completamente morada.
+
 Ningún fondo de pantalla completa debe verse oscuro o pesado.
+
 Mantén exactamente los mismos textos, campos y funcionalidad existentes; solo mejora el estilo visual.
+
 Salida esperada: Código Kotlin completo con Jetpack Compose, listo para compilar, estructurado en los archivos correspondientes dentro de los paquetes navigation y screens.
 
 ## Resultado Final
+
+<img width="630" height="1318" alt="image" src="https://github.com/user-attachments/assets/5d1579db-1179-450f-949e-e7ac1156a3cd" />
+
+<img width="731" height="1459" alt="image" src="https://github.com/user-attachments/assets/5c81ded5-ab09-4d15-8023-cf3f270489a7" />
+
+<img width="712" height="1459" alt="image" src="https://github.com/user-attachments/assets/42bd7971-3054-4647-bdaa-e8b076473d36" />
 
