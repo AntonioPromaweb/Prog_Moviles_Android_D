@@ -24,7 +24,7 @@ fun ProfileScreen(navController: NavController) {
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = "Juan León Suryca",
+            text = "Luis Vasquez",
             style = MaterialTheme.typography.bodyLarge
         )
         Spacer(modifier = Modifier.height(32.dp))
