@@ -16,6 +16,3 @@
 
 - **RF-05:** El sistema debe permitir regresar a la pantalla anterior mediante el botón de retroceso (popBackStack) y, desde el perfil, volver al inicio limpiando el historial de navegación.
 
----
-
-## Estructura del Proyecto
