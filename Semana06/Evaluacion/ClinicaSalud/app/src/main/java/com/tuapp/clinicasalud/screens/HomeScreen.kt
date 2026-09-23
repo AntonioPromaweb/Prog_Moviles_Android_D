@@ -6,10 +6,12 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -18,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.tuapp.clinicasalud.navigation.Screen
 import kotlinx.coroutines.launch
@@ -43,26 +46,32 @@ fun HomeScreen(navController: NavController) {
         drawerContent = {
             ModalDrawerSheet {
                 Spacer(modifier = Modifier.height(24.dp))
-                Text(
-                    "Juan Pérez",
+                Row(
                     modifier = Modifier.padding(16.dp),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    "Paciente",
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    style = MaterialTheme.typography.bodyMedium
-                )
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Surface(
+                        shape = MaterialTheme.shapes.extraLarge,
+                        color = Color(0xFFE8DEF8),
+                        modifier = Modifier.size(48.dp)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Text("JP", color = Color(0xFF673AB7), fontWeight = FontWeight.Bold)
+                        }
+                    }
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Column {
+                        Text("Juan Pérez", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                        Text("Paciente", style = MaterialTheme.typography.bodySmall)
+                    }
+                }
                 Spacer(modifier = Modifier.height(16.dp))
                 HorizontalDivider()
                 NavigationDrawerItem(
                     label = { Text("Inicio") },
                     icon = { Icon(Icons.Filled.Home, contentDescription = null) },
                     selected = true,
-                    onClick = {
-                        scope.launch { drawerState.close() }
-                    }
+                    onClick = { scope.launch { drawerState.close() } }
                 )
                 NavigationDrawerItem(
                     label = { Text("Mis citas") },
@@ -82,34 +91,57 @@ fun HomeScreen(navController: NavController) {
                         navController.navigate(Screen.MedicalHistory.route)
                     }
                 )
+                NavigationDrawerItem(
+                    label = { Text("Perfil") },
+                    icon = { Icon(Icons.Filled.Person, contentDescription = null) },
+                    selected = false,
+                    onClick = { scope.launch { drawerState.close() } }
+                )
             }
         }
     ) {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("Clínica Salud+") },
+                    title = {
+                        Column {
+                            Text("Clínica Salud+", color = Color.White, fontWeight = FontWeight.Bold)
+                            Text("Hola, Juan", color = Color.White.copy(alpha = 0.8f), fontSize = 12.sp)
+                        }
+                    },
                     navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                            Icon(Icons.Filled.Menu, contentDescription = "Menú")
+                            Icon(Icons.Filled.Menu, contentDescription = "Menú", tint = Color.White)
                         }
-                    }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF673AB7))
                 )
             }
         ) { padding ->
             Column(modifier = Modifier.padding(padding)) {
                 LazyRow(
-                    modifier = Modifier.padding(16.dp),
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(specialties) { specialty ->
                         FilterChip(
                             selected = specialty == selectedSpecialty,
                             onClick = { selectedSpecialty = specialty },
-                            label = { Text(specialty) }
+                            label = { Text(specialty, style = MaterialTheme.typography.labelMedium) },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = Color(0xFF673AB7),
+                                selectedLabelColor = Color.White,
+                                containerColor = Color(0xFFF5F5F5)
+                            )
                         )
                     }
                 }
+
+                Text(
+                    "Médicos disponibles",
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    fontWeight = FontWeight.Bold
+                )
 
                 LazyColumn(
                     contentPadding = PaddingValues(16.dp),
@@ -118,14 +150,36 @@ fun HomeScreen(navController: NavController) {
                     itemsIndexed(doctors) { index, doctor ->
                         Card(
                             modifier = Modifier.fillMaxWidth(),
-                            onClick = { navController.navigate(Screen.DoctorProfile.createRoute(index)) }
+                            onClick = { navController.navigate(Screen.DoctorProfile.createRoute(index)) },
+                            colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5)),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
                         ) {
-                            Column(modifier = Modifier.padding(16.dp)) {
-                                Text(doctor.name, fontWeight = FontWeight.Bold)
-                                Text(doctor.specialty, color = MaterialTheme.colorScheme.primary)
+                            Row(
+                                modifier = Modifier
+                                    .padding(16.dp)
+                                    .fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Surface(
+                                    shape = MaterialTheme.shapes.medium,
+                                    color = Color(0xFFE8DEF8),
+                                    modifier = Modifier.size(48.dp)
+                                ) {
+                                    Icon(
+                                        Icons.Filled.Add,
+                                        contentDescription = null,
+                                        tint = Color(0xFF673AB7),
+                                        modifier = Modifier.padding(12.dp)
+                                    )
+                                }
+                                Spacer(modifier = Modifier.width(16.dp))
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(doctor.name, fontWeight = FontWeight.Bold)
+                                    Text(doctor.specialty, color = Color(0xFF673AB7), style = MaterialTheme.typography.bodyMedium)
+                                }
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(Icons.Filled.Star, contentDescription = null, tint = Color(0xFFFFC107))
-                                    Text(" ${doctor.rating}")
+                                    Icon(Icons.Filled.Star, contentDescription = null, tint = Color(0xFFFFC107), modifier = Modifier.size(16.dp))
+                                    Text(" ${doctor.rating}", style = MaterialTheme.typography.bodyMedium)
                                 }
                             }
                         }

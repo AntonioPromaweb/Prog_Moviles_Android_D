@@ -2,6 +2,7 @@ package com.tuapp.clinicasalud.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
@@ -18,9 +19,9 @@ import com.tuapp.clinicasalud.navigation.Screen
 @Composable
 fun DoctorProfileScreen(navController: NavController, doctorId: Int) {
     val doctors = listOf(
-        Triple("Dra. Ana Torres", "Cardiología", 4.9),
-        Triple("Dr. Luis Vega", "Pediatría", 4.7),
-        Triple("Dra. Rosa Díaz", "Dermatología", 4.8)
+        Triple("Dra. Ana Torres", "Cardióloga · 12 años exp.", 4.9),
+        Triple("Dr. Luis Vega", "Pediatra · 8 años exp.", 4.7),
+        Triple("Dra. Rosa Díaz", "Dermatóloga · 10 años exp.", 4.8)
     )
     val doctor = doctors.getOrNull(doctorId) ?: doctors[0]
 
@@ -43,11 +44,25 @@ fun DoctorProfileScreen(navController: NavController, doctorId: Int) {
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(doctor.first, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-            Text(doctor.second, color = MaterialTheme.colorScheme.primary)
+            Surface(
+                shape = MaterialTheme.shapes.extraLarge,
+                color = Color(0xFFE8DEF8),
+                modifier = Modifier.size(96.dp)
+            ) {
+                Icon(
+                    Icons.Filled.Add,
+                    contentDescription = null,
+                    tint = Color(0xFF673AB7),
+                    modifier = Modifier.padding(24.dp)
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(doctor.first, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+            Text(doctor.second, color = Color(0xFF673AB7), style = MaterialTheme.typography.bodyMedium)
+            Spacer(modifier = Modifier.height(8.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Filled.Star, contentDescription = null, tint = Color(0xFFFFC107))
-                Text(" ${doctor.third} (128 reseñas)")
+                Text(" ${doctor.third} (128 reseñas)", style = MaterialTheme.typography.bodyMedium)
             }
             Spacer(modifier = Modifier.height(24.dp))
             Text(
@@ -57,9 +72,10 @@ fun DoctorProfileScreen(navController: NavController, doctorId: Int) {
             Spacer(modifier = Modifier.weight(1f))
             Button(
                 onClick = { navController.navigate(Screen.Schedule.createRoute(doctorId)) },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF673AB7))
             ) {
-                Text("Agendar cita")
+                Text("Agendar cita", color = Color.White)
             }
         }
     }
