@@ -5,22 +5,24 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.FitnessCenter
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.tuapp.tecsupfit.navigation.Screen
+import com.tuapp.tecsupfit.ui.theme.CardFondo
+import com.tuapp.tecsupfit.ui.theme.FondoClaro
+import com.tuapp.tecsupfit.ui.theme.VerdeLight
+import com.tuapp.tecsupfit.ui.theme.VerdePrimary
 
 data class GymClass(val id: Int, val name: String, val schedule: String)
 
@@ -28,9 +30,9 @@ data class GymClass(val id: Int, val name: String, val schedule: String)
 @Composable
 fun HomeScreen(navController: NavController) {
     val classes = listOf(
-        GymClass(1, "Yoga funcional", "7:00 am - Sala 2"),
-        GymClass(2, "Cross Training", "6:00 pm - Sala 1"),
-        GymClass(3, "Spinning", "7:30 pm - Sala 3")
+        GymClass(1, "Yoga funcional", "7:00 am · Sala 2"),
+        GymClass(2, "Cross Training", "6:00 pm · Sala 1"),
+        GymClass(3, "Spinning", "7:30 pm · Sala 3")
     )
     val filters = listOf("Hoy", "Esta semana")
     var selectedFilter by remember { mutableStateOf(filters.first()) }
@@ -40,43 +42,35 @@ fun HomeScreen(navController: NavController) {
             TopAppBar(
                 title = {
                     Column {
-                        Text("TECSUP Fit", color = Color.White, fontWeight = FontWeight.Bold)
-                        Text("Hola, Luis", color = Color.White.copy(alpha = 0.8f), fontSize = 12.sp)
+                        Text(
+                            text = "TECSUP Fit",
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 20.sp
+                        )
+                        Text(
+                            text = "Hola, Luis",
+                            color = Color.White.copy(alpha = 0.8f),
+                            fontSize = 12.sp
+                        )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF00695C))
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = VerdePrimary),
+                modifier = Modifier.clip(
+                    RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
+                )
             )
         },
         bottomBar = {
-            NavigationBar {
-                NavigationBarItem(
-                    icon = { Icon(Icons.Filled.Home, contentDescription = null) },
-                    label = { Text("Inicio") },
-                    selected = true,
-                    onClick = { }
-                )
-                NavigationBarItem(
-                    icon = { Icon(Icons.Filled.DateRange, contentDescription = null) },
-                    label = { Text("Reservas") },
-                    selected = false,
-                    onClick = { navController.navigate(Screen.Reservations.route) }
-                )
-                NavigationBarItem(
-                    icon = { Icon(Icons.Filled.List, contentDescription = null) },
-                    label = { Text("Rutinas") },
-                    selected = false,
-                    onClick = { navController.navigate(Screen.Routines.route) }
-                )
-                NavigationBarItem(
-                    icon = { Icon(Icons.Filled.Person, contentDescription = null) },
-                    label = { Text("Perfil") },
-                    selected = false,
-                    onClick = { navController.navigate(Screen.Profile.route) }
-                )
-            }
-        }
+            AppBottomBar(navController = navController, currentRoute = Screen.Home.route)
+        },
+        containerColor = FondoClaro
     ) { padding ->
-        Column(modifier = Modifier.padding(padding)) {
+        Column(
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize()
+        ) {
             LazyRow(
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -86,30 +80,37 @@ fun HomeScreen(navController: NavController) {
                         selected = filter == selectedFilter,
                         onClick = { selectedFilter = filter },
                         label = { Text(filter) },
+                        shape = RoundedCornerShape(20.dp),
                         colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = Color(0xFF00695C),
+                            selectedContainerColor = VerdePrimary,
                             selectedLabelColor = Color.White,
-                            containerColor = Color(0xFFF5F5F5)
-                        )
+                            containerColor = CardFondo,
+                            labelColor = Color.Black
+                        ),
+                        border = null
                     )
                 }
             }
 
             Text(
-                "Clases disponibles",
-                modifier = Modifier.padding(horizontal = 16.dp),
-                fontWeight = FontWeight.Bold
+                text = "Clases disponibles",
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp
             )
 
             LazyColumn(
-                contentPadding = PaddingValues(16.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 itemsIndexed(classes) { index, gymClass ->
                     Card(
                         modifier = Modifier.fillMaxWidth(),
-                        onClick = { navController.navigate(Screen.ClassDetail.createRoute(index)) },
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5))
+                        onClick = {
+                            navController.navigate(Screen.ClassDetail.createRoute(index))
+                        },
+                        colors = CardDefaults.cardColors(containerColor = CardFondo),
+                        shape = RoundedCornerShape(12.dp)
                     ) {
                         Row(
                             modifier = Modifier
@@ -118,21 +119,32 @@ fun HomeScreen(navController: NavController) {
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Surface(
-                                shape = MaterialTheme.shapes.medium,
-                                color = Color(0xFFB2DFDB),
+                                shape = RoundedCornerShape(12.dp),
+                                color = VerdeLight,
                                 modifier = Modifier.size(48.dp)
                             ) {
-                                Icon(
-                                    Icons.Filled.FitnessCenter,
-                                    contentDescription = null,
-                                    tint = Color(0xFF00695C),
-                                    modifier = Modifier.padding(12.dp)
-                                )
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(
+                                        imageVector = Icons.Filled.FitnessCenter,
+                                        contentDescription = null,
+                                        tint = VerdePrimary,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                }
                             }
                             Spacer(modifier = Modifier.width(16.dp))
                             Column {
-                                Text(gymClass.name, fontWeight = FontWeight.Bold)
-                                Text(gymClass.schedule, color = Color(0xFF00695C), style = MaterialTheme.typography.bodyMedium)
+                                Text(
+                                    text = gymClass.name,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 16.sp
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = gymClass.schedule,
+                                    color = VerdePrimary,
+                                    fontSize = 14.sp
+                                )
                             }
                         }
                     }

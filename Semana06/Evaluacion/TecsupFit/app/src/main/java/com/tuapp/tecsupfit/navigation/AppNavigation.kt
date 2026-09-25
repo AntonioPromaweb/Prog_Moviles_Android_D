@@ -22,30 +22,30 @@ fun AppNavigation() {
         startDestination = Screen.Home.route
     ) {
         composable(Screen.Home.route) {
-            HomeScreen(navController)
+            HomeScreen(navController = navController)
         }
         composable(
             route = Screen.ClassDetail.route,
             arguments = listOf(navArgument(name = "classId") { type = NavType.IntType })
         ) { backStackEntry ->
             val classId = backStackEntry.arguments?.getInt("classId") ?: 0
-            ClassDetailScreen(navController, classId)
+            ClassDetailScreen(navController = navController, classId = classId)
         }
         composable(
             route = Screen.Confirmation.route,
             arguments = listOf(navArgument(name = "classId") { type = NavType.IntType })
         ) { backStackEntry ->
             val classId = backStackEntry.arguments?.getInt("classId") ?: 0
-            ConfirmationScreen(navController, classId)
+            ConfirmationScreen(navController = navController, classId = classId)
         }
         composable(Screen.Reservations.route) {
-            ReservationsScreen(navController)
+            ReservationsScreen(navController = navController)
         }
         composable(Screen.Routines.route) {
-            RoutinesScreen(navController)
+            RoutinesScreen(navController = navController)
         }
         composable(Screen.Profile.route) {
-            ProfileScreen(navController)
+            ProfileScreen(navController = navController)
         }
     }
 }
