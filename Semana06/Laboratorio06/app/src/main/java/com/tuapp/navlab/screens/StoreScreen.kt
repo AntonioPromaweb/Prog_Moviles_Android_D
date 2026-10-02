@@ -6,9 +6,12 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.ShoppingBag
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -129,14 +132,34 @@ fun StoreScreen(navController: NavController) {
                                 ) {
                                     DropdownMenuItem(
                                         text = { Text("Favoritos") },
+                                        leadingIcon = {
+                                            Icon(
+                                                Icons.Filled.FavoriteBorder,
+                                                contentDescription = null
+                                            )
+                                        },
                                         onClick = { expanded = false }
                                     )
+                                    HorizontalDivider()
                                     DropdownMenuItem(
                                         text = { Text("Compartir") },
+                                        leadingIcon = {
+                                            Icon(
+                                                Icons.Filled.Share,
+                                                contentDescription = null
+                                            )
+                                        },
                                         onClick = { expanded = false }
                                     )
+                                    HorizontalDivider()
                                     DropdownMenuItem(
                                         text = { Text("Reportar") },
+                                        leadingIcon = {
+                                            Icon(
+                                                Icons.Filled.Warning,
+                                                contentDescription = null
+                                            )
+                                        },
                                         onClick = { expanded = false }
                                     )
                                 }
