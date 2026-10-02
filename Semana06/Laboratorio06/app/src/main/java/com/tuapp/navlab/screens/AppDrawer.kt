@@ -49,25 +49,39 @@ fun AppDrawer(navController: NavController, onItemClick: (String) -> Unit) {
             label = { Text("Inicio") },
             icon = { Icon(Icons.Filled.Home, contentDescription = null) },
             selected = true,
-            onClick = { onItemClick("inicio") }
+            onClick = {
+                navController.navigate("store") {
+                    popUpTo("store") { inclusive = true }
+                }
+                onItemClick("inicio")
+            }
         )
         NavigationDrawerItem(
             label = { Text("Mis pedidos") },
             icon = { Icon(Icons.Filled.ShoppingCart, contentDescription = null) },
             selected = false,
-            onClick = { onItemClick("pedidos") }
+            onClick = {
+                navController.navigate("misPedidos")
+                onItemClick("pedidos")
+            }
         )
         NavigationDrawerItem(
             label = { Text("Favoritos") },
             icon = { Icon(Icons.Filled.Favorite, contentDescription = null) },
             selected = false,
-            onClick = { onItemClick("favoritos") }
+            onClick = {
+                navController.navigate("favoritos")
+                onItemClick("favoritos")
+            }
         )
         NavigationDrawerItem(
             label = { Text("Perfil") },
             icon = { Icon(Icons.Filled.Person, contentDescription = null) },
             selected = false,
-            onClick = { onItemClick("perfil") }
+            onClick = {
+                navController.navigate("perfil")
+                onItemClick("perfil")
+            }
         )
         NavigationDrawerItem(
             label = { Text("Cerrar sesión") },
