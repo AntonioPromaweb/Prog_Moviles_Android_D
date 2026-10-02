@@ -119,8 +119,27 @@ fun StoreScreen(navController: NavController) {
                                     color = Color(0xFF673AB7)
                                 )
                             }
-                            IconButton(onClick = { expanded = true }) {
-                                Icon(Icons.Filled.MoreVert, contentDescription = "Opciones")
+                            Box {
+                                IconButton(onClick = { expanded = true }) {
+                                    Icon(Icons.Filled.MoreVert, contentDescription = "Opciones")
+                                }
+                                DropdownMenu(
+                                    expanded = expanded,
+                                    onDismissRequest = { expanded = false }
+                                ) {
+                                    DropdownMenuItem(
+                                        text = { Text("Favoritos") },
+                                        onClick = { expanded = false }
+                                    )
+                                    DropdownMenuItem(
+                                        text = { Text("Compartir") },
+                                        onClick = { expanded = false }
+                                    )
+                                    DropdownMenuItem(
+                                        text = { Text("Reportar") },
+                                        onClick = { expanded = false }
+                                    )
+                                }
                             }
                         }
                     }
