@@ -15,9 +15,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 
 @Composable
 fun AppDrawer(navController: NavController, onItemClick: (String) -> Unit) {
+    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
+
     ModalDrawerSheet {
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -48,7 +51,7 @@ fun AppDrawer(navController: NavController, onItemClick: (String) -> Unit) {
         NavigationDrawerItem(
             label = { Text("Inicio") },
             icon = { Icon(Icons.Filled.Home, contentDescription = null) },
-            selected = true,
+            selected = currentRoute == "store",
             onClick = {
                 navController.navigate("store") {
                     popUpTo("store") { inclusive = true }
@@ -59,7 +62,7 @@ fun AppDrawer(navController: NavController, onItemClick: (String) -> Unit) {
         NavigationDrawerItem(
             label = { Text("Mis pedidos") },
             icon = { Icon(Icons.Filled.ShoppingCart, contentDescription = null) },
-            selected = false,
+            selected = currentRoute == "misPedidos",
             onClick = {
                 navController.navigate("misPedidos")
                 onItemClick("pedidos")
@@ -68,7 +71,7 @@ fun AppDrawer(navController: NavController, onItemClick: (String) -> Unit) {
         NavigationDrawerItem(
             label = { Text("Favoritos") },
             icon = { Icon(Icons.Filled.Favorite, contentDescription = null) },
-            selected = false,
+            selected = currentRoute == "favoritos",
             onClick = {
                 navController.navigate("favoritos")
                 onItemClick("favoritos")
@@ -77,7 +80,7 @@ fun AppDrawer(navController: NavController, onItemClick: (String) -> Unit) {
         NavigationDrawerItem(
             label = { Text("Perfil") },
             icon = { Icon(Icons.Filled.Person, contentDescription = null) },
-            selected = false,
+            selected = currentRoute == "perfil",
             onClick = {
                 navController.navigate("perfil")
                 onItemClick("perfil")
