@@ -2,12 +2,11 @@ package com.tuapp.navlab
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -20,79 +19,132 @@ import kotlinx.coroutines.launch
 fun AppNavegacion() {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    var currentRoute by remember { mutableStateOf(DestinoDrawer.MIS_PEDIDOS) }
+    val snackbarHostState = remember { SnackbarHostState() }
+    var currentRoute by remember { mutableStateOf(DestinoDrawer.INICIO) }
 
     val productos = remember {
         listOf(
-            Producto(1, "Audifonos", "S/ 89.00"),
-            Producto(2, "Smartwatch", "S/ 199.00"),
-            Producto(3, "Funda celular", "S/ 25.00")
+            Producto(1, "Audífonos Inalámbricos", "S/ 89.00", "Audífonos Bluetooth de alta calidad"),
+            Producto(2, "Smartwatch Deportivo", "S/ 199.00", "Reloj inteligente con sensor de ritmo cardiaco"),
+            Producto(3, "Funda de Celular Ultra Slim", "S/ 25.00", "Protección contra caídas e impactos")
         )
     }
 
-    ModalNavigationDrawer(
-        drawerState = drawerState,
-        drawerContent = {
-            AppDrawerContent(
-                currentRoute = currentRoute,
-                onNavigateTo = { destino -> currentRoute = destino },
-                closeDrawer = { scope.launch { drawerState.close() } }
-            )
-        }
-    ) {
-        Scaffold(
-            topBar = {
-                Row(
+    if (!AuthManager.isLoggedIn) {
+        LoginScreen(
+            onLoginSuccess = {
+                AuthManager.isLoggedIn = true
+            }
+        )
+    } else {
+        ModalNavigationDrawer(
+            drawerState = drawerState,
+            drawerContent = {
+                AppDrawerContent(
+                    currentRoute = currentRoute,
+                    onNavigateTo = { destino -> currentRoute = destino },
+                    closeDrawer = { scope.launch { drawerState.close() } }
+                )
+            }
+        ) {
+            Scaffold(
+                snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+                topBar = {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color(0xFF5E2E8C))
+                            .statusBarsPadding()
+                            .padding(start = 4.dp, end = 16.dp, top = 8.dp, bottom = 14.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        IconButton(
+                            onClick = { scope.launch { drawerState.open() } }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Menu,
+                                contentDescription = "Menú",
+                                tint = Color.White
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.width(4.dp))
+
+                        Column(
+                            modifier = Modifier.padding(top = 6.dp)
+                        ) {
+                            Text(
+                                text = "TECSUP Store",
+                                color = Color.White,
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = currentRoute.titulo,
+                                color = Color.White.copy(alpha = 0.85f),
+                                fontSize = 13.sp
+                            )
+                        }
+                    }
+                },
+                containerColor = Color.White
+            ) { paddingValues ->
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color(0xFF5E2E8C))
-                        .statusBarsPadding()
-                        .padding(start = 4.dp, end = 16.dp, top = 8.dp, bottom = 14.dp),
-                    verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                        .fillMaxSize()
+                        .padding(paddingValues)
                 ) {
-                    IconButton(
-                        onClick = { scope.launch { drawerState.open() } }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Menu,
-                            contentDescription = "Menú",
-                            tint = Color.White
-                        )
-                    }
+                    when (currentRoute) {
+                        DestinoDrawer.INICIO -> {
+                            InicioScreen(
+                                productos = productos,
+                                onComprarClick = { producto ->
+                                    val pedido = PedidosManager.agregarPedido(producto)
+                                    scope.launch {
+                                        snackbarHostState.showSnackbar("¡Pedido ${pedido.codigo} registrado con éxito!")
+                                    }
+                                },
+                                onReportarClick = { producto ->
+                                    scope.launch {
+                                        snackbarHostState.showSnackbar("El producto '${producto.nombre}' ha sido reportado.")
+                                    }
+                                }
+                            )
+                        }
 
-                    Spacer(modifier = Modifier.width(4.dp))
+                        DestinoDrawer.FAVORITOS -> {
+                            FavoritosScreen(
+                                onComprarClick = { producto ->
+                                    val pedido = PedidosManager.agregarPedido(producto)
+                                    scope.launch {
+                                        snackbarHostState.showSnackbar("¡Pedido ${pedido.codigo} registrado con éxito!")
+                                    }
+                                },
+                                onReportarClick = { producto ->
+                                    scope.launch {
+                                        snackbarHostState.showSnackbar("El producto '${producto.nombre}' ha sido reportado.")
+                                    }
+                                }
+                            )
+                        }
 
-                    Column(
-                        modifier = Modifier.padding(top = 6.dp)
-                    ) {
-                        Text(
-                            text = "TECSUP Store",
-                            color = Color.White,
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Spacer(modifier = Modifier.height(2.dp))
-                        Text(
-                            text = "Mas vendidos",
-                            color = Color.White.copy(alpha = 0.85f),
-                            fontSize = 13.sp
-                        )
+                        DestinoDrawer.MIS_PEDIDOS -> {
+                            MisPedidosScreen()
+                        }
+
+                        DestinoDrawer.PERFIL -> {
+                            PerfilScreen(
+                                onLogout = {
+                                    AuthManager.logout()
+                                }
+                            )
+                        }
+
+                        DestinoDrawer.CERRAR_SESION -> {
+                            AuthManager.logout()
+                        }
                     }
-                }
-            },
-            containerColor = Color.White
-        ) { paddingValues ->
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(top = 12.dp)
-            ) {
-                itemsIndexed(productos) { index, producto ->
-                    TarjetaProducto(
-                        producto = producto,
-                        isHighlighted = (index == 0)
-                    )
                 }
             }
         }

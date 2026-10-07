@@ -1,44 +1,79 @@
 package com.tuapp.navlab
 
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.filled.ShoppingBag
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-data class Producto(
-    val id: Int,
-    val nombre: String,
-    val precio: String
-)
-
 @Composable
 fun TarjetaProducto(
     producto: Producto,
     isHighlighted: Boolean = false,
-    onFavoritoClick: () -> Unit = {},
-    onCompartirClick: () -> Unit = {},
-    onReportarClick: () -> Unit = {}
+    onComprarClick: (Producto) -> Unit = {},
+    onReportarClick: (Producto) -> Unit = {}
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
+    var showReportDialog by remember { mutableStateOf(false) }
+
+    val context = LocalContext.current
+    val isFavorito = FavoritosManager.esFavorito(producto)
 
     val purpleBrand = Color(0xFF5E2E8C)
     val lightPurpleBg = Color(0xFFF3EAFB)
+
+    if (showReportDialog) {
+        AlertDialog(
+            onDismissRequest = { showReportDialog = false },
+            title = {
+                Text(
+                    text = "Reportar producto",
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF1E1E24)
+                )
+            },
+            text = {
+                Text("¿Estás seguro de que deseas reportar el producto \"${producto.nombre}\"?")
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showReportDialog = false
+                        onReportarClick(producto)
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = purpleBrand)
+                ) {
+                    Text("Reportar", color = Color.White)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showReportDialog = false }) {
+                    Text("Cancelar", color = Color.Gray)
+                }
+            },
+            containerColor = Color.White,
+            shape = RoundedCornerShape(16.dp)
+        )
+    }
 
     Card(
         modifier = Modifier
@@ -90,6 +125,16 @@ fun TarjetaProducto(
                 )
             }
 
+            IconButton(
+                onClick = { onComprarClick(producto) }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ShoppingCart,
+                    contentDescription = "Comprar",
+                    tint = purpleBrand
+                )
+            }
+
             Box {
                 IconButton(onClick = { menuExpanded = true }) {
                     Icon(
@@ -108,18 +153,24 @@ fun TarjetaProducto(
                         .clip(RoundedCornerShape(12.dp))
                 ) {
                     DropdownMenuItem(
-                        text = { Text("Favoritos", fontSize = 14.sp) },
+                        text = {
+                            Text(
+                                text = if (isFavorito) "Quitar de favoritos" else "Agregar a favoritos",
+                                fontSize = 14.sp,
+                                color = if (isFavorito) Color.Red else Color.Unspecified
+                            )
+                        },
                         leadingIcon = {
                             Icon(
-                                imageVector = Icons.Default.Favorite,
+                                imageVector = if (isFavorito) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                                 contentDescription = null,
-                                tint = Color.DarkGray,
+                                tint = if (isFavorito) Color.Red else Color.DarkGray,
                                 modifier = Modifier.size(18.dp)
                             )
                         },
                         onClick = {
                             menuExpanded = false
-                            onFavoritoClick()
+                            FavoritosManager.toggleFavorito(producto)
                         }
                     )
                     HorizontalDivider(color = Color(0xFFEEEEEE), thickness = 0.8.dp)
@@ -135,7 +186,16 @@ fun TarjetaProducto(
                         },
                         onClick = {
                             menuExpanded = false
-                            onCompartirClick()
+                            val sendIntent = Intent().apply {
+                                action = Intent.ACTION_SEND
+                                putExtra(
+                                    Intent.EXTRA_TEXT,
+                                    "¡Mira este producto en TECSUP Store!: ${producto.nombre} - ${producto.precio}"
+                                )
+                                type = "text/plain"
+                            }
+                            val shareIntent = Intent.createChooser(sendIntent, "Compartir producto")
+                            context.startActivity(shareIntent)
                         }
                     )
                     HorizontalDivider(color = Color(0xFFEEEEEE), thickness = 0.8.dp)
@@ -151,7 +211,7 @@ fun TarjetaProducto(
                         },
                         onClick = {
                             menuExpanded = false
-                            onReportarClick()
+                            showReportDialog = true
                         }
                     )
                 }
