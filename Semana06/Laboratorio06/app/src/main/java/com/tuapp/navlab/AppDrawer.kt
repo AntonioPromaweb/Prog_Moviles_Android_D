@@ -1,28 +1,35 @@
 package com.tuapp.navlab
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.ShoppingBag
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-enum class DestinoDrawer(val titulo: String) {
-    INICIO("Inicio"),
-    MIS_PEDIDOS("Mis pedidos"),
-    FAVORITOS("Favoritos"),
-    PERFIL("Perfil"),
-    CERRAR_SESION("Cerrar sesion")
+enum class DestinoDrawer(val titulo: String, val icon: ImageVector) {
+    INICIO("Inicio", Icons.Default.Home),
+    MIS_PEDIDOS("Mis pedidos", Icons.Default.ShoppingBag),
+    FAVORITOS("Favoritos", Icons.Default.Favorite),
+    PERFIL("Perfil", Icons.Default.Person),
+    CERRAR_SESION("Cerrar sesion", Icons.Default.ExitToApp)
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppDrawerContent(
     currentRoute: DestinoDrawer,
@@ -31,7 +38,6 @@ fun AppDrawerContent(
 ) {
     val purpleBrand = Color(0xFF5E2E8C)
     val lightPurpleActive = Color(0xFFF3EAFB)
-    val circleBorderColor = Color(0xFF2C2C34)
 
     ModalDrawerSheet(
         modifier = Modifier.width(310.dp),
@@ -53,7 +59,7 @@ fun AppDrawerContent(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "JR",
+                    text = "LV",
                     fontWeight = FontWeight.Bold,
                     fontSize = 17.sp,
                     color = purpleBrand
@@ -64,14 +70,14 @@ fun AppDrawerContent(
 
             Column {
                 Text(
-                    text = "Luis Vasquez",
+                    text = AuthManager.usuarioNombre,
                     fontWeight = FontWeight.Bold,
                     fontSize = 17.sp,
                     color = Color(0xFF1E1E24)
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = "luis.vasquez.f@tecsup.edu.pe",
+                    text = AuthManager.usuarioCorreo,
                     fontSize = 12.sp,
                     color = Color.Gray
                 )
@@ -89,6 +95,12 @@ fun AppDrawerContent(
         DestinoDrawer.values().forEach { destino ->
             val isSelected = destino == currentRoute
 
+            val badgeCount = when (destino) {
+                DestinoDrawer.FAVORITOS -> FavoritosManager.favoritos.size
+                DestinoDrawer.MIS_PEDIDOS -> PedidosManager.pedidos.size
+                else -> 0
+            }
+
             NavigationDrawerItem(
                 label = {
                     Text(
@@ -100,19 +112,41 @@ fun AppDrawerContent(
                 },
                 selected = isSelected,
                 onClick = {
-                    onNavigateTo(destino)
-                    closeDrawer()
+                    if (destino == DestinoDrawer.CERRAR_SESION) {
+                        closeDrawer()
+                        AuthManager.logout()
+                    } else {
+                        onNavigateTo(destino)
+                        closeDrawer()
+                    }
                 },
                 icon = {
-                    Box(
-                        modifier = Modifier
-                            .size(20.dp)
-                            .border(
-                                width = 1.8.dp,
-                                color = if (isSelected) purpleBrand else circleBorderColor,
-                                shape = CircleShape
+                    if (badgeCount > 0) {
+                        BadgedBox(
+                            badge = {
+                                Badge(
+                                    containerColor = purpleBrand,
+                                    contentColor = Color.White
+                                ) {
+                                    Text("$badgeCount")
+                                }
+                            }
+                        ) {
+                            Icon(
+                                imageVector = destino.icon,
+                                contentDescription = destino.titulo,
+                                tint = if (isSelected) purpleBrand else Color.Gray,
+                                modifier = Modifier.size(22.dp)
                             )
-                    )
+                        }
+                    } else {
+                        Icon(
+                            imageVector = destino.icon,
+                            contentDescription = destino.titulo,
+                            tint = if (isSelected) purpleBrand else Color.Gray,
+                            modifier = Modifier.size(22.dp)
+                        )
+                    }
                 },
                 shape = RoundedCornerShape(16.dp),
                 colors = NavigationDrawerItemDefaults.colors(
