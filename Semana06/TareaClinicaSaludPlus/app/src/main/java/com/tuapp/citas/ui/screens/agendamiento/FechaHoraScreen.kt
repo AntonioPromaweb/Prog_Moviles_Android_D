@@ -24,6 +24,7 @@ import com.tuapp.citas.ui.components.BarraSuperiorConVolver
 import com.tuapp.citas.ui.components.BotonPrimario
 import com.tuapp.citas.ui.components.FotoMedico
 import com.tuapp.citas.ui.theme.*
+import com.tuapp.citas.ui.util.formatearHora
 import com.tuapp.citas.util.diasHabilesDeSemana
 import com.tuapp.citas.util.mesYAnio
 import com.tuapp.citas.util.nombreCortoDia
@@ -222,10 +223,10 @@ fun FechaHoraScreen(
                             .padding(vertical = 15.dp)
                     ) {
                         Text(
-                            text = hora,
+                            text = formatearHora(hora),
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Medium,
-                            color = if (estaSeleccionada) Blanco else AzulOscuro
+                            color = if (estaSeleccionada) Blanco else TextoOscuro
                         )
                     }
                 }

@@ -27,8 +27,8 @@ import com.tuapp.citas.ui.components.BarraSuperiorConVolver
 import com.tuapp.citas.ui.components.BotonPrimario
 import com.tuapp.citas.ui.components.FotoMedico
 import com.tuapp.citas.ui.theme.*
+import com.tuapp.citas.ui.util.formatearHora
 import com.tuapp.citas.util.fechaLargaDesdeIso
-import java.time.LocalTime
 
 @Composable
 fun ConfirmarCitaScreen(
@@ -44,15 +44,6 @@ fun ConfirmarCitaScreen(
         medico?.let { Repositorio.obtenerEspecialidad(it.especialidadId) }
     }
     var motivo by remember { mutableStateOf("") }
-
-    // Cada consulta dura 30 minutos: "09:30 a 10:00"
-    val rangoHora = remember(hora) {
-        try {
-            "$hora a ${LocalTime.parse(hora).plusMinutes(30)}"
-        } catch (e: Exception) {
-            hora
-        }
-    }
 
     Scaffold(
         containerColor = Blanco,
@@ -126,7 +117,7 @@ fun ConfirmarCitaScreen(
             // Detalles de la reserva
             ItemDetalleCita(icono = Icons.Default.CalendarMonth, titulo = "Fecha", detalle = fechaLargaDesdeIso(fecha))
             HorizontalDivider(color = BordeGris.copy(alpha = 0.6f))
-            ItemDetalleCita(icono = Icons.Default.Schedule, titulo = "Hora", detalle = rangoHora)
+            ItemDetalleCita(icono = Icons.Default.Schedule, titulo = "Hora", detalle = formatearHora(hora))
             HorizontalDivider(color = BordeGris.copy(alpha = 0.6f))
             ItemDetalleCita(icono = Icons.Default.LocationOn, titulo = "Tipo de atención", detalle = "Consulta presencial")
             HorizontalDivider(color = BordeGris.copy(alpha = 0.6f))
