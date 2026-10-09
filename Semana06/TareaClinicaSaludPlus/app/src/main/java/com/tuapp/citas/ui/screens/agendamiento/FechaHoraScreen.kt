@@ -7,12 +7,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,7 +22,14 @@ import androidx.compose.ui.unit.sp
 import com.tuapp.citas.data.repository.Repositorio
 import com.tuapp.citas.ui.components.BarraSuperiorConVolver
 import com.tuapp.citas.ui.components.BotonPrimario
+import com.tuapp.citas.ui.components.FotoMedico
 import com.tuapp.citas.ui.theme.*
+import com.tuapp.citas.util.diasHabilesDeSemana
+import com.tuapp.citas.util.mesYAnio
+import com.tuapp.citas.util.nombreCortoDia
+import java.time.LocalDate
+
+private const val MAX_SEMANAS_ADELANTE = 12
 
 @Composable
 fun FechaHoraScreen(
@@ -33,27 +38,27 @@ fun FechaHoraScreen(
     alVolver: () -> Unit
 ) {
     val medico = remember(medicoId) { Repositorio.obtenerMedico(medicoId) }
+    val especialidad = remember(medico) {
+        medico?.let { Repositorio.obtenerEspecialidad(it.especialidadId) }
+    }
 
-    // Días fijos para la Fase 1
-    val dias = listOf(
-        Pair("Lun", "15"),
-        Pair("Mar", "16"),
-        Pair("Mié", "17"),
-        Pair("Jue", "18"),
-        Pair("Vie", "19")
-    )
-    var diaSeleccionado by remember { mutableStateOf("16") }
+    // Calendario dinámico: semana mostrada, día y hora elegidos
+    val hoy = remember { LocalDate.now() }
+    var semanaOffset by remember { mutableIntStateOf(0) }
+    val dias = remember(semanaOffset) { diasHabilesDeSemana(semanaOffset, hoy) }
+    var diaSeleccionado by remember { mutableStateOf(dias.first()) }
     var horaSeleccionada by remember { mutableStateOf<String?>(null) }
 
-    // Fecha armada para el repositorio en Fase 1
-    val fechaCompleta = "2026-09-$diaSeleccionado"
+    // Fecha en formato ISO (yyyy-MM-dd) para el repositorio y la navegación
+    val fechaCompleta = diaSeleccionado.toString()
 
-    // Recalcular horarios reactivamente
+    // Los horarios se recalculan solos al cambiar de médico o de día
     val horariosDisponibles = remember(medicoId, fechaCompleta) {
-        Repositorio.horariosDisponibles(medicoId, fechaCompleta)
+        if (medico == null) emptyList() else Repositorio.horariosDisponibles(medicoId, fechaCompleta)
     }
 
     Scaffold(
+        containerColor = Blanco,
         topBar = {
             BarraSuperiorConVolver(
                 titulo = "Seleccionar fecha y hora",
@@ -84,97 +89,121 @@ fun FechaHoraScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .background(FondoGris)
-                .padding(16.dp)
+                .background(Blanco)
+                .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
             // Tarjeta superior resumen del médico
             medico?.let {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Blanco, RoundedCornerShape(12.dp))
-                        .padding(12.dp),
+                        .background(AzulClaro.copy(alpha = 0.7f), RoundedCornerShape(14.dp))
+                        .padding(14.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .size(46.dp)
-                            .clip(CircleShape)
-                            .background(AzulClaro),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(Icons.Default.Person, contentDescription = null, tint = AzulPrimario)
-                    }
-                    Spacer(modifier = Modifier.width(12.dp))
+                    FotoMedico(fotoRes = it.fotoRes, tamano = 64.dp)
+                    Spacer(modifier = Modifier.width(14.dp))
                     Column {
-                        Text(it.nombre, fontWeight = FontWeight.Bold, fontSize = 15.sp, color = TextoOscuro)
-                        Text(it.cmp, fontSize = 12.sp, color = TextoGris)
+                        Text(it.nombre, fontWeight = FontWeight.Bold, fontSize = 17.sp, color = AzulOscuro)
+                        Text(it.cargo.ifEmpty { especialidad?.nombre ?: "" }, fontSize = 14.sp, color = TextoGris)
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(18.dp))
+
+            // Mes y año de la semana mostrada + flechas de semana
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(
+                    enabled = semanaOffset > 0,
+                    onClick = {
+                        semanaOffset--
+                        diaSeleccionado = diasHabilesDeSemana(semanaOffset, hoy).first()
+                        horaSeleccionada = null
+                    }
+                ) {
+                    Icon(
+                        Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                        contentDescription = "Semana anterior",
+                        tint = if (semanaOffset > 0) AzulOscuro else BordeGris
+                    )
+                }
+                Text(
+                    text = mesYAnio(dias.first()),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp,
+                    color = AzulOscuro
+                )
+                IconButton(
+                    enabled = semanaOffset < MAX_SEMANAS_ADELANTE,
+                    onClick = {
+                        semanaOffset++
+                        diaSeleccionado = diasHabilesDeSemana(semanaOffset, hoy).first()
+                        horaSeleccionada = null
+                    }
+                ) {
+                    Icon(
+                        Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = "Semana siguiente",
+                        tint = AzulOscuro
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(6.dp))
+
+            // Fila de días hábiles
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                dias.forEach { dia ->
+                    val esSeleccionado = diaSeleccionado == dia
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(14.dp))
+                            .background(if (esSeleccionado) AzulPrimario else FondoCampo)
+                            .clickable {
+                                diaSeleccionado = dia
+                                horaSeleccionada = null // Reiniciar hora al cambiar día
+                            }
+                            .padding(vertical = 12.dp)
+                    ) {
+                        Text(
+                            text = nombreCortoDia(dia),
+                            fontSize = 12.sp,
+                            color = if (esSeleccionado) Blanco else TextoGris
+                        )
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(
+                            text = dia.dayOfMonth.toString(),
+                            fontSize = 17.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = if (esSeleccionado) Blanco else AzulOscuro
+                        )
                     }
                 }
             }
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // Selector de mes y flechas (Fase 1 visual)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = { /* Fase 2 */ }) {
-                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "Mes anterior", tint = TextoGris)
-                }
-                Text("Setiembre 2026", fontWeight = FontWeight.Bold, fontSize = 15.sp, color = TextoOscuro)
-                IconButton(onClick = { /* Fase 2 */ }) {
-                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = "Mes siguiente", tint = TextoGris)
-                }
+            if (medico == null) {
+                Text("No se encontró el médico seleccionado.", color = TextoGris, fontSize = 14.sp)
+            } else if (horariosDisponibles.isEmpty()) {
+                Text("No hay horarios disponibles para este día.", color = TextoGris, fontSize = 14.sp)
             }
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            // Fila de días
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                dias.forEach { (nombreDia, numDia) ->
-                    val esSeleccionado = diaSeleccionado == numDia
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(if (esSeleccionado) AzulPrimario else Blanco)
-                            .clickable {
-                                diaSeleccionado = numDia
-                                horaSeleccionada = null // Reiniciar hora al cambiar día
-                            }
-                            .padding(vertical = 12.dp, horizontal = 14.dp)
-                    ) {
-                        Text(
-                            text = nombreDia,
-                            fontSize = 12.sp,
-                            color = if (esSeleccionado) Blanco else TextoGris
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = numDia,
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = if (esSeleccionado) Blanco else TextoOscuro
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-            Text("Horarios disponibles", fontWeight = FontWeight.Bold, fontSize = 15.sp, color = TextoOscuro)
-            Spacer(modifier = Modifier.height(12.dp))
 
             // Cuadrícula de horarios (LazyVerticalGrid)
             LazyVerticalGrid(
                 columns = GridCells.Fixed(3),
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
                 items(horariosDisponibles) { hora ->
@@ -182,21 +211,21 @@ fun FechaHoraScreen(
                     Box(
                         contentAlignment = Alignment.Center,
                         modifier = Modifier
-                            .clip(RoundedCornerShape(10.dp))
-                            .background(if (estaSeleccionada) AzulPrimario else Blanco)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(if (estaSeleccionada) AzulPrimario else FondoCampo)
                             .border(
                                 width = 1.dp,
                                 color = if (estaSeleccionada) AzulPrimario else BordeGris,
-                                shape = RoundedCornerShape(10.dp)
+                                shape = RoundedCornerShape(12.dp)
                             )
                             .clickable { horaSeleccionada = hora }
-                            .padding(vertical = 12.dp)
+                            .padding(vertical = 15.dp)
                     ) {
                         Text(
                             text = hora,
-                            fontSize = 13.sp,
+                            fontSize = 15.sp,
                             fontWeight = FontWeight.Medium,
-                            color = if (estaSeleccionada) Blanco else TextoOscuro
+                            color = if (estaSeleccionada) Blanco else AzulOscuro
                         )
                     }
                 }
