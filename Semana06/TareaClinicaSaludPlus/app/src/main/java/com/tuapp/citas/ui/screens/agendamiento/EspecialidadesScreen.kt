@@ -31,9 +31,11 @@ import com.tuapp.citas.ui.theme.TextoGris
 
 @Composable
 fun EspecialidadesScreen(
+    sedeId: String = "",
     alSeleccionarEspecialidad: (String) -> Unit,
     alVolver: () -> Unit
 ) {
+    val sede = remember(sedeId) { Repositorio.obtenerSede(sedeId) }
     var busqueda by remember { mutableStateOf("") }
     val especialidadesFiltradas = remember(busqueda) {
         Repositorio.buscarEspecialidades(busqueda)
@@ -43,7 +45,7 @@ fun EspecialidadesScreen(
         containerColor = Blanco,
         topBar = {
             BarraSuperiorConVolver(
-                titulo = "Especialidades",
+                titulo = if (sede != null) "Especialidades en ${sede.nombre}" else "Especialidades",
                 alVolver = alVolver
             )
         }

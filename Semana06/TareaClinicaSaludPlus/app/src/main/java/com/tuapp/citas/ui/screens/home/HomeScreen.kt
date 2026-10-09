@@ -34,9 +34,10 @@ import com.tuapp.citas.ui.theme.*
 
 @Composable
 fun HomeScreen(
-    alIrAAgendar: () -> Unit,
+    alIrASedes: () -> Unit,
     alIrAMisCitas: () -> Unit,
-    alIrAPerfil: () -> Unit
+    alIrAPerfil: () -> Unit,
+    alIrADoctores: () -> Unit
 ) {
     var destinoSeleccionado by remember { mutableStateOf(0) }
     val usuario = Repositorio.usuarioActual
@@ -86,7 +87,8 @@ fun HomeScreen(
                 Spacer(modifier = Modifier.height(8.dp))
                 val itemsMenu = listOf(
                     Triple("Inicio", Icons.Default.Home, { }),
-                    Triple("Agendar cita", Icons.Default.AddCircleOutline, alIrAAgendar),
+                    Triple("Sedes", Icons.Default.LocationOn, alIrASedes),
+                    Triple("Doctores", Icons.Default.MedicalServices, alIrADoctores),
                     Triple("Mis citas", Icons.Default.CalendarMonth, alIrAMisCitas),
                     Triple("Mis datos", Icons.Default.Person, alIrAPerfil)
                 )
@@ -136,9 +138,12 @@ fun HomeScreen(
                 )
                 NavigationBarItem(
                     selected = destinoSeleccionado == 2,
-                    onClick = { destinoSeleccionado = 2 },
-                    icon = { Icon(Icons.Default.Description, contentDescription = "Resultados") },
-                    label = { Text("Resultados", fontSize = 11.sp) },
+                    onClick = {
+                        destinoSeleccionado = 2
+                        alIrADoctores()
+                    },
+                    icon = { Icon(Icons.Default.MedicalServices, contentDescription = "Doctores") },
+                    label = { Text("Doctores", fontSize = 11.sp) },
                     colors = coloresItem
                 )
                 NavigationBarItem(
@@ -212,12 +217,12 @@ fun HomeScreen(
                 horizontalArrangement = Arrangement.spacedBy(14.dp)
             ) {
                 TarjetaAccion(
-                    titulo = "Agendar cita",
+                    titulo = "Sedes",
                     iconoRes = R.drawable.ic_accion_agendar,
                     colorFondo = Color(0xFFDDEBFD),
                     colorTexto = Color(0xFF1D63E0),
                     modifier = Modifier.weight(1f),
-                    onClick = alIrAAgendar
+                    onClick = alIrASedes
                 )
                 TarjetaAccion(
                     titulo = "Mis citas",
@@ -244,12 +249,12 @@ fun HomeScreen(
                     onClick = alIrAPerfil
                 )
                 TarjetaAccion(
-                    titulo = "Resultados",
+                    titulo = "Doctores",
                     iconoRes = R.drawable.ic_accion_resultados,
                     colorFondo = Color(0xFFFFEDD8),
                     colorTexto = Color(0xFFF08A1C),
                     modifier = Modifier.weight(1f),
-                    onClick = { }
+                    onClick = alIrADoctores
                 )
             }
 
@@ -271,7 +276,7 @@ fun HomeScreen(
                     text = "Ver todas",
                     color = AzulPrimario,
                     fontSize = 14.sp,
-                    modifier = Modifier.clickable { alIrAAgendar() }
+                    modifier = Modifier.clickable { alIrASedes() }
                 )
             }
 
@@ -283,7 +288,7 @@ fun HomeScreen(
                 items(destacadas) { esp ->
                     ItemEspecialidadDestacada(
                         especialidad = esp,
-                        onClick = alIrAAgendar
+                        onClick = alIrASedes
                     )
                 }
             }
