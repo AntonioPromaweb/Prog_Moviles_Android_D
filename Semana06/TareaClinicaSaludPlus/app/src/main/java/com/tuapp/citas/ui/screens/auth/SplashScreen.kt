@@ -1,23 +1,23 @@
 package com.tuapp.citas.ui.screens.auth
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.LocalHospital
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.tuapp.citas.R
 import com.tuapp.citas.ui.components.BotonPrimario
-import com.tuapp.citas.ui.theme.AzulClaro
+import com.tuapp.citas.ui.theme.AzulOscuro
 import com.tuapp.citas.ui.theme.AzulPrimario
+import com.tuapp.citas.ui.theme.FondoSplash
 import com.tuapp.citas.ui.theme.TextoGris
-import com.tuapp.citas.ui.theme.TextoOscuro
 
 @Composable
 fun SplashScreen(
@@ -27,60 +27,67 @@ fun SplashScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceBetween
+            .background(FondoSplash)
+            .statusBarsPadding(),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(30.dp))
+        Spacer(modifier = Modifier.height(36.dp))
 
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Surface(
-                modifier = Modifier.size(110.dp),
-                shape = CircleShape,
-                color = AzulClaro
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Icon(
-                        imageVector = Icons.Default.LocalHospital,
-                        contentDescription = "Logo SaludPlus",
-                        tint = AzulPrimario,
-                        modifier = Modifier.size(60.dp)
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(20.dp))
-            Text(
-                text = "Clínica SaludPlus",
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
-                color = AzulPrimario
-            )
-            Text(
-                text = "Tu salud, nuestra prioridad",
-                fontSize = 15.sp,
-                color = TextoGris
-            )
-        }
+        Image(
+            painter = painterResource(id = R.drawable.img_logo),
+            contentDescription = "Logo SaludPlus",
+            modifier = Modifier.size(width = 96.dp, height = 90.dp),
+            contentScale = ContentScale.Fit
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+        Text(
+            text = "Clínica",
+            fontSize = 26.sp,
+            fontWeight = FontWeight.Bold,
+            color = AzulOscuro
+        )
+        Text(
+            text = "SaludPlus",
+            fontSize = 40.sp,
+            fontWeight = FontWeight.ExtraBold,
+            color = AzulOscuro
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = "Tu salud, nuestra prioridad",
+            fontSize = 16.sp,
+            color = TextoGris
+        )
 
-        Column(
+        Spacer(modifier = Modifier.weight(1f))
+
+        Image(
+            painter = painterResource(id = R.drawable.img_doctor_splash),
+            contentDescription = "Doctor de la clínica",
             modifier = Modifier.fillMaxWidth(),
+            contentScale = ContentScale.FillWidth
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(FondoSplash)
+                .navigationBarsPadding()
+                .padding(horizontal = 24.dp, vertical = 12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             BotonPrimario(
                 texto = "Comenzar",
                 onClick = alIrARegistro
             )
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             TextButton(onClick = alIrALogin) {
                 Text(
-                    text = "¿Ya tienes cuenta? Iniciar sesión",
+                    text = "Ya tengo una cuenta",
                     color = AzulPrimario,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.Medium
                 )
             }
-            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }

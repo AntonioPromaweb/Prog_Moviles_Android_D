@@ -1,9 +1,9 @@
 package com.tuapp.citas.ui.screens.auth
 
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -16,12 +16,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tuapp.citas.data.repository.Repositorio
 import com.tuapp.citas.ui.components.BotonPrimario
+import com.tuapp.citas.ui.components.CampoFormulario
+import com.tuapp.citas.ui.theme.AzulOscuro
 import com.tuapp.citas.ui.theme.AzulPrimario
+import com.tuapp.citas.ui.theme.Blanco
 import com.tuapp.citas.ui.theme.TextoGris
 import com.tuapp.citas.ui.theme.TextoOscuro
 
@@ -37,46 +39,47 @@ fun LoginScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(Blanco)
+            .statusBarsPadding()
             .verticalScroll(rememberScrollState())
-            .padding(24.dp),
+            .padding(horizontal = 24.dp, vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(50.dp))
+        Spacer(modifier = Modifier.height(40.dp))
         Text(
             text = "Bienvenido de nuevo",
-            fontSize = 24.sp,
+            fontSize = 26.sp,
             fontWeight = FontWeight.Bold,
-            color = TextoOscuro
+            color = AzulOscuro
         )
+        Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = "Inicia sesión para continuar",
             fontSize = 14.sp,
             color = TextoGris
         )
 
-        Spacer(modifier = Modifier.height(36.dp))
+        Spacer(modifier = Modifier.height(32.dp))
 
-        OutlinedTextField(
-            value = correo,
-            onValueChange = { correo = it },
-            label = { Text("Correo electrónico") },
-            leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp)
+        CampoFormulario(
+            icono = Icons.Default.Email,
+            etiqueta = "Correo o teléfono",
+            valor = correo,
+            onValorChange = { correo = it.trim() },
+            placeholder = "juan@correo.com",
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(14.dp))
 
-        OutlinedTextField(
-            value = contrasena,
-            onValueChange = { contrasena = it },
-            label = { Text("Contraseña") },
-            leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
-            visualTransformation = PasswordVisualTransformation(),
+        CampoFormulario(
+            icono = Icons.Default.Lock,
+            etiqueta = "Contraseña",
+            valor = contrasena,
+            onValorChange = { contrasena = it },
+            placeholder = "••••••••",
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp)
+            esPassword = true
         )
 
         Spacer(modifier = Modifier.height(28.dp))
@@ -98,14 +101,17 @@ fun LoginScreen(
             }
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
-        TextButton(onClick = alIrARegistro) {
-            Text(
-                text = "¿No tienes cuenta? Regístrate aquí",
-                color = AzulPrimario,
-                fontWeight = FontWeight.SemiBold
-            )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(text = "¿No tienes cuenta?", fontSize = 14.sp, color = TextoOscuro)
+            TextButton(onClick = alIrARegistro, contentPadding = PaddingValues(horizontal = 6.dp)) {
+                Text(
+                    text = "Regístrate aquí",
+                    color = AzulPrimario,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
         }
     }
 }
