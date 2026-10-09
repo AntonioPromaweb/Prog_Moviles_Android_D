@@ -7,5 +7,6 @@ data class Cita(
     val especialidadId: String,
     val fecha: String,
     val hora: String,
-    val estado: String = "Confirmada"
+    val estado: String = "Confirmada",
+    val motivo: String = ""
 )

@@ -7,5 +7,8 @@ data class Medico(
     val cmp: String,
     val calificacion: Double,
     val precioConsulta: Double,
-    val fotoRes: Int = 0
+    val fotoRes: Int = 0,
+    val cargo: String = "",
+    val resenas: Int = 0,
+    val disponibilidad: String = ""
 )
