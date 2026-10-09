@@ -23,7 +23,9 @@ import com.tuapp.citas.data.repository.Repositorio
 import com.tuapp.citas.ui.components.BarraSuperiorConVolver
 import com.tuapp.citas.ui.components.BotonPrimario
 import com.tuapp.citas.ui.components.DialogoConfirmacion
+import com.tuapp.citas.ui.components.FotoMedico
 import com.tuapp.citas.ui.theme.*
+import com.tuapp.citas.util.fechaLargaDesdeIso
 
 @Composable
 fun MisCitasScreen(
@@ -153,20 +155,7 @@ fun TarjetaItemCita(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(
-                        modifier = Modifier
-                            .size(40.dp)
-                            .clip(CircleShape)
-                            .background(AzulClaro),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.MedicalServices,
-                            contentDescription = null,
-                            tint = AzulPrimario,
-                            modifier = Modifier.size(22.dp)
-                        )
-                    }
+                    FotoMedico(fotoRes = medico?.fotoRes ?: com.tuapp.citas.R.drawable.foto_ana_torres, tamano = 44.dp)
                     Spacer(modifier = Modifier.width(10.dp))
                     Column {
                         Text(
@@ -207,7 +196,7 @@ fun TarjetaItemCita(
                 Column {
                     Text(text = "Fecha y hora:", fontSize = 11.sp, color = TextoGris)
                     Text(
-                        text = "${cita.fecha} • ${cita.hora} hrs",
+                        text = "${fechaLargaDesdeIso(cita.fecha)} • ${cita.hora} hrs",
                         fontSize = 13.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = TextoOscuro
