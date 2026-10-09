@@ -1,32 +1,33 @@
 package com.tuapp.citas.ui.screens.agendamiento
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.MedicalServices
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tuapp.citas.data.model.Especialidad
 import com.tuapp.citas.data.repository.Repositorio
 import com.tuapp.citas.ui.components.BarraSuperiorConVolver
-import com.tuapp.citas.ui.theme.AzulClaro
-import com.tuapp.citas.ui.theme.AzulPrimario
+import com.tuapp.citas.ui.components.iconoEspecialidad
+import com.tuapp.citas.ui.theme.AzulOscuro
 import com.tuapp.citas.ui.theme.Blanco
-import com.tuapp.citas.ui.theme.FondoGris
+import com.tuapp.citas.ui.theme.BordeGris
+import com.tuapp.citas.ui.theme.FondoCampo
 import com.tuapp.citas.ui.theme.TextoGris
-import com.tuapp.citas.ui.theme.TextoOscuro
 
 @Composable
 fun EspecialidadesScreen(
@@ -39,6 +40,7 @@ fun EspecialidadesScreen(
     }
 
     Scaffold(
+        containerColor = Blanco,
         topBar = {
             BarraSuperiorConVolver(
                 titulo = "Especialidades",
@@ -50,14 +52,14 @@ fun EspecialidadesScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .background(FondoGris)
+                .background(Blanco)
                 .padding(horizontal = 16.dp)
         ) {
             // Buscador
             OutlinedTextField(
                 value = busqueda,
                 onValueChange = { busqueda = it },
-                placeholder = { Text("Buscar especialidad...") },
+                placeholder = { Text("Buscar especialidad...", color = TextoGris) },
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Default.Search,
@@ -67,25 +69,25 @@ fun EspecialidadesScreen(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 12.dp),
+                    .padding(vertical = 10.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = Blanco,
-                    unfocusedContainerColor = Blanco
+                    focusedContainerColor = FondoCampo,
+                    unfocusedContainerColor = FondoCampo,
+                    focusedBorderColor = FondoCampo,
+                    unfocusedBorderColor = FondoCampo
                 ),
                 singleLine = true
             )
 
             // Lista con LazyColumn
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(10.dp),
-                modifier = Modifier.fillMaxSize()
-            ) {
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
                 items(especialidadesFiltradas) { esp ->
                     TarjetaEspecialidad(
                         especialidad = esp,
                         onClick = { alSeleccionarEspecialidad(esp.id) }
                     )
+                    HorizontalDivider(color = BordeGris.copy(alpha = 0.6f))
                 }
             }
         }
@@ -97,55 +99,40 @@ fun TarjetaEspecialidad(
     especialidad: Especialidad,
     onClick: () -> Unit
 ) {
-    Card(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() },
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Blanco),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+            .clickable { onClick() }
+            .padding(vertical = 10.dp, horizontal = 2.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(46.dp)
-                    .clip(CircleShape)
-                    .background(AzulClaro),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.MedicalServices,
-                    contentDescription = null,
-                    tint = AzulPrimario,
-                    modifier = Modifier.size(24.dp)
-                )
-            }
+        Image(
+            painter = painterResource(id = iconoEspecialidad(especialidad.iconoNombre)),
+            contentDescription = especialidad.nombre,
+            modifier = Modifier.size(50.dp),
+            contentScale = ContentScale.Fit
+        )
 
-            Spacer(modifier = Modifier.width(14.dp))
+        Spacer(modifier = Modifier.width(14.dp))
 
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = especialidad.nombre,
-                    fontSize = 15.sp,
-                    color = TextoOscuro
-                )
-                Text(
-                    text = especialidad.descripcion,
-                    fontSize = 12.sp,
-                    color = TextoGris
-                )
-            }
-
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                contentDescription = "Ver médicos",
-                tint = TextoGris
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = especialidad.nombre,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = AzulOscuro
+            )
+            Text(
+                text = especialidad.descripcion,
+                fontSize = 13.sp,
+                color = TextoGris
             )
         }
+
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            contentDescription = "Ver médicos",
+            tint = TextoGris
+        )
     }
 }

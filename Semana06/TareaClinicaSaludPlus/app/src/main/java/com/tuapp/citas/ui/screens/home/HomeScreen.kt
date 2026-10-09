@@ -1,12 +1,14 @@
 package com.tuapp.citas.ui.screens.home
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -15,14 +17,17 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.tuapp.citas.R
 import com.tuapp.citas.data.model.Especialidad
 import com.tuapp.citas.data.repository.Repositorio
+import com.tuapp.citas.ui.components.iconoDestacada
 import com.tuapp.citas.ui.theme.*
 
 @Composable
@@ -35,7 +40,16 @@ fun HomeScreen(
     val usuario = Repositorio.usuarioActual
     val destacadas = remember { Repositorio.especialidadesDestacadas() }
 
+    val coloresItem = NavigationBarItemDefaults.colors(
+        selectedIconColor = AzulPrimario,
+        selectedTextColor = AzulPrimario,
+        unselectedIconColor = TextoGris,
+        unselectedTextColor = TextoGris,
+        indicatorColor = Blanco
+    )
+
     Scaffold(
+        containerColor = Blanco,
         bottomBar = {
             NavigationBar(
                 containerColor = Blanco,
@@ -45,12 +59,8 @@ fun HomeScreen(
                     selected = destinoSeleccionado == 0,
                     onClick = { destinoSeleccionado = 0 },
                     icon = { Icon(Icons.Default.Home, contentDescription = "Inicio") },
-                    label = { Text("Inicio") },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = AzulPrimario,
-                        selectedTextColor = AzulPrimario,
-                        indicatorColor = AzulClaro
-                    )
+                    label = { Text("Inicio", fontSize = 11.sp) },
+                    colors = coloresItem
                 )
                 NavigationBarItem(
                     selected = destinoSeleccionado == 1,
@@ -58,24 +68,16 @@ fun HomeScreen(
                         destinoSeleccionado = 1
                         alIrAMisCitas()
                     },
-                    icon = { Icon(Icons.Default.CalendarToday, contentDescription = "Citas") },
-                    label = { Text("Mis citas") },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = AzulPrimario,
-                        selectedTextColor = AzulPrimario,
-                        indicatorColor = AzulClaro
-                    )
+                    icon = { Icon(Icons.Default.CalendarMonth, contentDescription = "Citas") },
+                    label = { Text("Citas", fontSize = 11.sp) },
+                    colors = coloresItem
                 )
                 NavigationBarItem(
                     selected = destinoSeleccionado == 2,
                     onClick = { destinoSeleccionado = 2 },
-                    icon = { Icon(Icons.Default.Assessment, contentDescription = "Resultados") },
-                    label = { Text("Resultados") },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = AzulPrimario,
-                        selectedTextColor = AzulPrimario,
-                        indicatorColor = AzulClaro
-                    )
+                    icon = { Icon(Icons.Default.Description, contentDescription = "Resultados") },
+                    label = { Text("Resultados", fontSize = 11.sp) },
+                    colors = coloresItem
                 )
                 NavigationBarItem(
                     selected = destinoSeleccionado == 3,
@@ -84,12 +86,8 @@ fun HomeScreen(
                         alIrAPerfil()
                     },
                     icon = { Icon(Icons.Default.Person, contentDescription = "Perfil") },
-                    label = { Text("Perfil") },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = AzulPrimario,
-                        selectedTextColor = AzulPrimario,
-                        indicatorColor = AzulClaro
-                    )
+                    label = { Text("Perfil", fontSize = 11.sp) },
+                    colors = coloresItem
                 )
             }
         }
@@ -98,88 +96,91 @@ fun HomeScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .background(FondoGris)
+                .background(Blanco)
                 .verticalScroll(rememberScrollState())
-                .padding(20.dp)
+                .padding(horizontal = 18.dp, vertical = 10.dp)
         ) {
-            // Encabezado de bienvenida
+            // Menú y notificaciones
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
-                    Text(
-                        text = "¡Hola, ${usuario?.nombreCompleto?.split(" ")?.firstOrNull() ?: "Paciente"}!",
-                        fontSize = 22.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = TextoOscuro
-                    )
-                    Text(
-                        text = "¿Qué deseas realizar hoy?",
-                        fontSize = 14.sp,
-                        color = TextoGris
-                    )
-                }
-                IconButton(onClick = { /* Notificaciones */ }) {
-                    Icon(
-                        imageVector = Icons.Default.Notifications,
-                        contentDescription = "Notificaciones",
-                        tint = TextoOscuro
-                    )
-                }
+                Icon(
+                    imageVector = Icons.Default.Menu,
+                    contentDescription = "Menú",
+                    tint = AzulOscuro,
+                    modifier = Modifier.size(24.dp)
+                )
+                Icon(
+                    imageVector = Icons.Default.NotificationsNone,
+                    contentDescription = "Notificaciones",
+                    tint = AzulOscuro,
+                    modifier = Modifier.size(26.dp)
+                )
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Text(
+                text = "¡Hola, ${usuario?.nombreCompleto?.split(" ")?.firstOrNull() ?: "Paciente"}!",
+                fontSize = 30.sp,
+                fontWeight = FontWeight.Bold,
+                color = AzulOscuro
+            )
+            Text(
+                text = "¿Qué deseas hacer hoy?",
+                fontSize = 17.sp,
+                color = TextoGris
+            )
 
-            // Tarjetas de Acciones Rápidas (Grid 2x2 simulado)
+            Spacer(modifier = Modifier.height(18.dp))
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                horizontalArrangement = Arrangement.spacedBy(14.dp)
             ) {
                 TarjetaAccion(
                     titulo = "Agendar cita",
-                    icono = Icons.Default.AddCircleOutline,
-                    colorFondo = Color(0xFFE8F1FF),
-                    colorIcono = AzulPrimario,
+                    iconoRes = R.drawable.ic_accion_agendar,
+                    colorFondo = Color(0xFFDDEBFD),
+                    colorTexto = Color(0xFF1D63E0),
                     modifier = Modifier.weight(1f),
                     onClick = alIrAAgendar
                 )
                 TarjetaAccion(
                     titulo = "Mis citas",
-                    icono = Icons.Default.DateRange,
-                    colorFondo = Color(0xFFE6F7F0),
-                    colorIcono = VerdeExito,
+                    iconoRes = R.drawable.ic_accion_citas,
+                    colorFondo = Color(0xFFD9F7E7),
+                    colorTexto = Color(0xFF1FA055),
                     modifier = Modifier.weight(1f),
                     onClick = alIrAMisCitas
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                horizontalArrangement = Arrangement.spacedBy(14.dp)
             ) {
                 TarjetaAccion(
-                    titulo = "Mi salud",
-                    icono = Icons.Default.FavoriteBorder,
-                    colorFondo = Color(0xFFF3E8FF),
-                    colorIcono = Color(0xFF9333EA),
+                    titulo = "Mis datos",
+                    iconoRes = R.drawable.ic_accion_datos,
+                    colorFondo = Color(0xFFEBE0FC),
+                    colorTexto = Color(0xFF8B3FE0),
                     modifier = Modifier.weight(1f),
-                    onClick = { }
+                    onClick = alIrAPerfil
                 )
                 TarjetaAccion(
                     titulo = "Resultados",
-                    icono = Icons.Default.Description,
-                    colorFondo = Color(0xFFFFF3E0),
-                    colorIcono = Color(0xFFEA580C),
+                    iconoRes = R.drawable.ic_accion_resultados,
+                    colorFondo = Color(0xFFFFEDD8),
+                    colorTexto = Color(0xFFF08A1C),
                     modifier = Modifier.weight(1f),
                     onClick = { }
                 )
             }
 
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             // Sección Especialidades Destacadas con LazyRow
             Row(
@@ -189,19 +190,22 @@ fun HomeScreen(
             ) {
                 Text(
                     text = "Especialidades destacadas",
-                    fontSize = 17.sp,
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = TextoOscuro
+                    color = AzulOscuro
                 )
-                TextButton(onClick = alIrAAgendar) {
-                    Text("Ver todas", color = AzulPrimario, fontSize = 13.sp)
-                }
+                Text(
+                    text = "Ver todas",
+                    color = AzulPrimario,
+                    fontSize = 14.sp,
+                    modifier = Modifier.clickable { alIrAAgendar() }
+                )
             }
 
             Spacer(modifier = Modifier.height(12.dp))
 
             LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(destacadas) { esp ->
                     ItemEspecialidadDestacada(
@@ -210,6 +214,8 @@ fun HomeScreen(
                     )
                 }
             }
+
+            Spacer(modifier = Modifier.height(12.dp))
         }
     }
 }
@@ -217,48 +223,34 @@ fun HomeScreen(
 @Composable
 fun TarjetaAccion(
     titulo: String,
-    icono: ImageVector,
+    iconoRes: Int,
     colorFondo: Color,
-    colorIcono: Color,
+    colorTexto: Color,
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
-    Card(
+    Column(
         modifier = modifier
-            .height(115.dp)
-            .clickable { onClick() },
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Blanco),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            .height(122.dp)
+            .background(colorFondo, RoundedCornerShape(18.dp))
+            .clickable { onClick() }
+            .padding(12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Center
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(42.dp)
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(colorFondo),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = icono,
-                    contentDescription = titulo,
-                    tint = colorIcono,
-                    modifier = Modifier.size(24.dp)
-                )
-            }
-            Spacer(modifier = Modifier.height(10.dp))
-            Text(
-                text = titulo,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = TextoOscuro
-            )
-        }
+        Image(
+            painter = painterResource(id = iconoRes),
+            contentDescription = titulo,
+            modifier = Modifier.size(46.dp),
+            contentScale = ContentScale.Fit
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+        Text(
+            text = titulo,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Medium,
+            color = colorTexto
+        )
     }
 }
 
@@ -270,30 +262,28 @@ fun ItemEspecialidadDestacada(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .width(85.dp)
+            .width(96.dp)
+            .height(124.dp)
+            .background(Blanco, RoundedCornerShape(14.dp))
+            .border(BorderStroke(1.dp, BordeGris), RoundedCornerShape(14.dp))
             .clickable { onClick() }
+            .padding(horizontal = 6.dp, vertical = 10.dp)
     ) {
-        Box(
-            modifier = Modifier
-                .size(60.dp)
-                .clip(CircleShape)
-                .background(AzulClaro),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = Icons.Default.MedicalServices,
-                contentDescription = especialidad.nombre,
-                tint = AzulPrimario,
-                modifier = Modifier.size(28.dp)
-            )
-        }
-        Spacer(modifier = Modifier.height(6.dp))
+        Image(
+            painter = painterResource(id = iconoDestacada(especialidad.iconoNombre)),
+            contentDescription = especialidad.nombre,
+            modifier = Modifier.size(54.dp),
+            contentScale = ContentScale.Fit
+        )
+        Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = especialidad.nombre,
-            fontSize = 12.sp,
+            fontSize = 13.sp,
             fontWeight = FontWeight.Medium,
-            color = TextoOscuro,
-            maxLines = 1
+            color = AzulOscuro,
+            textAlign = TextAlign.Center,
+            maxLines = 2,
+            lineHeight = 16.sp
         )
     }
 }
