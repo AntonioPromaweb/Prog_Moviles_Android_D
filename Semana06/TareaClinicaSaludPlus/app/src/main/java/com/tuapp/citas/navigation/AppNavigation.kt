@@ -8,6 +8,8 @@ import com.tuapp.citas.ui.screens.auth.LoginScreen
 import com.tuapp.citas.ui.screens.auth.RegistroScreen
 import com.tuapp.citas.ui.screens.auth.SplashScreen
 import com.tuapp.citas.ui.screens.home.HomeScreen
+import com.tuapp.citas.ui.screens.sedes.SedesScreen
+import com.tuapp.citas.ui.screens.doctores.DoctoresScreen
 import com.tuapp.citas.ui.screens.agendamiento.MedicosScreen
 import com.tuapp.citas.ui.screens.agendamiento.EspecialidadesScreen
 import com.tuapp.citas.ui.screens.agendamiento.FechaHoraScreen
@@ -33,11 +35,6 @@ fun AppNavigation() {
 
         composable(Rutas.Registro.ruta) {
             RegistroScreen(
-                alRegistrarExitoso = {
-                    navController.navigate(Rutas.Home.ruta) {
-                        popUpTo(Rutas.Splash.ruta) { inclusive = true }
-                    }
-                },
                 alIrALogin = { navController.navigate(Rutas.Login.ruta) }
             )
         }
@@ -55,14 +52,32 @@ fun AppNavigation() {
 
         composable(Rutas.Home.ruta) {
             HomeScreen(
-                alIrAAgendar = { navController.navigate(Rutas.Especialidades.ruta) },
+                alIrASedes = { navController.navigate(Rutas.Sedes.ruta) },
                 alIrAMisCitas = { navController.navigate(Rutas.MisCitas.ruta) },
-                alIrAPerfil = { navController.navigate(Rutas.Perfil.ruta) }
+                alIrAPerfil = { navController.navigate(Rutas.Perfil.ruta) },
+                alIrADoctores = { navController.navigate(Rutas.Doctores.ruta) }
             )
         }
 
-        composable(Rutas.Especialidades.ruta) {
+        composable(Rutas.Sedes.ruta) {
+            SedesScreen(
+                alSeleccionarSede = { sedeId ->
+                    navController.navigate(Rutas.Especialidades.crearRuta(sedeId))
+                },
+                alVolver = { navController.popBackStack() }
+            )
+        }
+
+        composable(Rutas.Doctores.ruta) {
+            DoctoresScreen(
+                alVolver = { navController.popBackStack() }
+            )
+        }
+
+        composable(Rutas.Especialidades.ruta) { backStackEntry ->
+            val sedeId = backStackEntry.arguments?.getString("sedeId") ?: ""
             EspecialidadesScreen(
+                sedeId = sedeId,
                 alSeleccionarEspecialidad = { espId ->
                     navController.navigate(Rutas.Medicos.crearRuta(espId))
                 },
@@ -129,7 +144,7 @@ fun AppNavigation() {
 
         composable(Rutas.MisCitas.ruta) {
             MisCitasScreen(
-                alIrAAgendar = { navController.navigate(Rutas.Especialidades.ruta) },
+                alIrAAgendar = { navController.navigate(Rutas.Sedes.ruta) },
                 alVolver = { navController.popBackStack() }
             )
         }

@@ -32,7 +32,6 @@ import com.tuapp.citas.ui.theme.TextoOscuro
 
 @Composable
 fun RegistroScreen(
-    alRegistrarExitoso: () -> Unit,
     alIrALogin: () -> Unit
 ) {
     val context = LocalContext.current
@@ -129,7 +128,7 @@ fun RegistroScreen(
                         val exito = Repositorio.registrarUsuario(nombre.trim(), telefono, correo, contrasena)
                         if (exito) {
                             Toast.makeText(context, "Registro exitoso", Toast.LENGTH_SHORT).show()
-                            alRegistrarExitoso()
+                            alIrALogin()
                         } else {
                             Toast.makeText(context, "El correo o teléfono ya está registrado", Toast.LENGTH_SHORT).show()
                         }
