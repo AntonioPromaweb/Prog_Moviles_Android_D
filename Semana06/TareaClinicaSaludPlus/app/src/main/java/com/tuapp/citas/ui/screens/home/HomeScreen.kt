@@ -24,6 +24,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.launch
+import com.tuapp.citas.util.fechaLargaDesdeIso
 import com.tuapp.citas.R
 import com.tuapp.citas.data.model.Especialidad
 import com.tuapp.citas.data.repository.Repositorio
@@ -39,6 +41,10 @@ fun HomeScreen(
     var destinoSeleccionado by remember { mutableStateOf(0) }
     val usuario = Repositorio.usuarioActual
     val destacadas = remember { Repositorio.especialidadesDestacadas() }
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+    var mostrarNotificaciones by remember { mutableStateOf(false) }
+    var citasNotificacion by remember { mutableStateOf(Repositorio.citasDelUsuario()) }
 
     val coloresItem = NavigationBarItemDefaults.colors(
         selectedIconColor = AzulPrimario,
@@ -48,6 +54,62 @@ fun HomeScreen(
         indicatorColor = Blanco
     )
 
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            ModalDrawerSheet(drawerContainerColor = Blanco) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(AzulClaro)
+                        .padding(horizontal = 20.dp, vertical = 28.dp)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.img_logo),
+                        contentDescription = "Logo SaludPlus",
+                        modifier = Modifier.size(width = 56.dp, height = 52.dp),
+                        contentScale = ContentScale.Fit
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Text(
+                        text = usuario?.nombreCompleto ?: "Paciente",
+                        fontSize = 17.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = AzulOscuro
+                    )
+                    Text(
+                        text = usuario?.correo?.ifBlank { null } ?: usuario?.telefono ?: "",
+                        fontSize = 13.sp,
+                        color = TextoGris
+                    )
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                val itemsMenu = listOf(
+                    Triple("Inicio", Icons.Default.Home, { }),
+                    Triple("Agendar cita", Icons.Default.AddCircleOutline, alIrAAgendar),
+                    Triple("Mis citas", Icons.Default.CalendarMonth, alIrAMisCitas),
+                    Triple("Mis datos", Icons.Default.Person, alIrAPerfil)
+                )
+                itemsMenu.forEachIndexed { indice, (titulo, icono, accion) ->
+                    NavigationDrawerItem(
+                        label = { Text(titulo) },
+                        icon = { Icon(icono, contentDescription = null) },
+                        selected = indice == 0,
+                        onClick = {
+                            scope.launch { drawerState.close() }
+                            accion()
+                        },
+                        modifier = Modifier.padding(horizontal = 12.dp),
+                        colors = NavigationDrawerItemDefaults.colors(
+                            selectedContainerColor = AzulClaro,
+                            selectedIconColor = AzulPrimario,
+                            selectedTextColor = AzulPrimario
+                        )
+                    )
+                }
+            }
+        }
+    ) {
     Scaffold(
         containerColor = Blanco,
         bottomBar = {
@@ -106,18 +168,29 @@ fun HomeScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = Icons.Default.Menu,
-                    contentDescription = "Menú",
-                    tint = AzulOscuro,
-                    modifier = Modifier.size(24.dp)
-                )
-                Icon(
-                    imageVector = Icons.Default.NotificationsNone,
-                    contentDescription = "Notificaciones",
-                    tint = AzulOscuro,
-                    modifier = Modifier.size(26.dp)
-                )
+                IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                    Icon(
+                        imageVector = Icons.Default.Menu,
+                        contentDescription = "Menú",
+                        tint = AzulOscuro,
+                        modifier = Modifier.size(26.dp)
+                    )
+                }
+                IconButton(onClick = {
+                    citasNotificacion = Repositorio.citasDelUsuario()
+                    mostrarNotificaciones = true
+                }) {
+                    BadgedBox(badge = {
+                        if (Repositorio.citasDelUsuario().isNotEmpty()) Badge()
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.NotificationsNone,
+                            contentDescription = "Notificaciones",
+                            tint = AzulOscuro,
+                            modifier = Modifier.size(26.dp)
+                        )
+                    }
+                }
             }
 
             Text(
@@ -217,6 +290,34 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
         }
+    }
+    }
+
+    if (mostrarNotificaciones) {
+        AlertDialog(
+            onDismissRequest = { mostrarNotificaciones = false },
+            title = { Text("Notificaciones", fontWeight = FontWeight.Bold, color = AzulOscuro) },
+            text = {
+                if (citasNotificacion.isEmpty()) {
+                    Text("No tienes notificaciones por ahora.", color = TextoGris)
+                } else {
+                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        citasNotificacion.take(5).forEach { cita ->
+                            val medico = Repositorio.obtenerMedico(cita.medicoId)
+                            Text(
+                                text = "Recordatorio: cita con ${medico?.nombre ?: "tu médico"} el ${fechaLargaDesdeIso(cita.fecha)} a las ${cita.hora}.",
+                                fontSize = 14.sp,
+                                color = AzulOscuro
+                            )
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { mostrarNotificaciones = false }) { Text("Cerrar") }
+            },
+            containerColor = Blanco
+        )
     }
 }
 
