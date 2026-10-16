@@ -22,5 +22,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Laboratorio08"
+rootProject.name = "HuellitasVet"
 include(":app")

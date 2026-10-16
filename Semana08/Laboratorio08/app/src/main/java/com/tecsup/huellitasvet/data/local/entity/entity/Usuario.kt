@@ -1,4 +1,4 @@
-package com.tecsup.huellitasvet.data.local.entity
+package com.tecsup.huellitasvet.local1.dao.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
