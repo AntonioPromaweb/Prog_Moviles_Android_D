@@ -2,6 +2,7 @@ package com.tecsup.murocampus
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -43,7 +44,11 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        // Barras del sistema con iconos claros, porque el fondo es oscuro
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT),
+            navigationBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT)
+        )
         setContent {
             MuroCampusTheme {
                 // null = se ve la lista; con un id = se ve el detalle
@@ -71,6 +76,7 @@ class MainActivity : ComponentActivity() {
                             ) {
                                 Text(
                                     text = "+",
+                                    color = FondoEspacial,
                                     fontSize = 28.sp,
                                     fontWeight = FontWeight.Bold,
                                     fontFamily = FontFamily.Monospace
