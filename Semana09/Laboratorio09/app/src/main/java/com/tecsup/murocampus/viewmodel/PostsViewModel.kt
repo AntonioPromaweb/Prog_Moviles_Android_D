@@ -9,20 +9,43 @@ import com.tecsup.murocampus.model.Post
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 data class DetalleUi(val post: Post, val comentarios: List<Comentario>)
 
 class PostsViewModel(private val repo: PostRepository) : ViewModel() {
 
-    private val _lista = MutableStateFlow<UiState<List<Post>>>(UiState.Cargando)
-    val lista: StateFlow<UiState<List<Post>>> = _lista.asStateFlow()
+    private val _listaOriginal = MutableStateFlow<UiState<List<Post>>>(UiState.Cargando)
 
     // null significa "Todos"
     private val _usuarioFiltro = MutableStateFlow<Int?>(null)
     val usuarioFiltro: StateFlow<Int?> = _usuarioFiltro.asStateFlow()
+
+    private val _busqueda = MutableStateFlow("")
+    val busqueda: StateFlow<String> = _busqueda.asStateFlow()
+
+    // Combina la lista de la red con el filtro de búsqueda por título
+    val lista: StateFlow<UiState<List<Post>>> = combine(_listaOriginal, _busqueda) { estado, query ->
+        when (estado) {
+            is UiState.Exito -> {
+                if (query.isBlank()) {
+                    estado
+                } else {
+                    UiState.Exito(estado.datos.filter { it.title.contains(query, ignoreCase = true) })
+                }
+            }
+            else -> estado
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = UiState.Cargando
+    )
 
     // null = aun no se envio nada
     private val _creado = MutableStateFlow<UiState<Post>?>(null)
@@ -39,12 +62,12 @@ class PostsViewModel(private val repo: PostRepository) : ViewModel() {
 
     fun cargar() {
         viewModelScope.launch {
-            _lista.value = UiState.Cargando
+            _listaOriginal.value = UiState.Cargando
             val userId = _usuarioFiltro.value
             val resultado = if (userId == null) repo.listar() else repo.porUsuario(userId)
             resultado
-                .onSuccess { _lista.value = UiState.Exito(it) }
-                .onFailure { _lista.value = UiState.Error(mensajeDe(it)) }
+                .onSuccess { _listaOriginal.value = UiState.Exito(it) }
+                .onFailure { _listaOriginal.value = UiState.Error(mensajeDe(it)) }
         }
     }
 
@@ -52,6 +75,10 @@ class PostsViewModel(private val repo: PostRepository) : ViewModel() {
     fun filtrar(userId: Int?) {
         _usuarioFiltro.value = userId
         cargar()
+    }
+
+    fun buscar(texto: String) {
+        _busqueda.value = texto
     }
 
     fun publicar(titulo: String, texto: String) {
