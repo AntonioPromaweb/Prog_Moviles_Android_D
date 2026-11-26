@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tecsup.murocampus.data.PostRepository
 import com.tecsup.murocampus.model.Comentario
+import com.tecsup.murocampus.model.NuevoPost
 import com.tecsup.murocampus.model.Post
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -22,6 +23,10 @@ class PostsViewModel(private val repo: PostRepository) : ViewModel() {
     // null significa "Todos"
     private val _usuarioFiltro = MutableStateFlow<Int?>(null)
     val usuarioFiltro: StateFlow<Int?> = _usuarioFiltro.asStateFlow()
+
+    // null = aun no se envio nada
+    private val _creado = MutableStateFlow<UiState<Post>?>(null)
+    val creado: StateFlow<UiState<Post>?> = _creado.asStateFlow()
 
     private val _detalle = MutableStateFlow<UiState<DetalleUi>>(UiState.Cargando)
     val detalle: StateFlow<UiState<DetalleUi>> = _detalle.asStateFlow()
@@ -43,6 +48,19 @@ class PostsViewModel(private val repo: PostRepository) : ViewModel() {
     fun filtrar(userId: Int?) {
         _usuarioFiltro.value = userId
         cargar()
+    }
+
+    fun publicar(titulo: String, texto: String) {
+        viewModelScope.launch {
+            _creado.value = UiState.Cargando
+            repo.crear(NuevoPost(userId = 1, title = titulo, body = texto))
+                .onSuccess { _creado.value = UiState.Exito(it) }
+                .onFailure { _creado.value = UiState.Error(mensajeDe(it)) }
+        }
+    }
+
+    fun limpiarCreacion() {
+        _creado.value = null
     }
 
     // Dos llamadas a la vez (post y comentarios). Si una falla, todo el detalle es Error.
