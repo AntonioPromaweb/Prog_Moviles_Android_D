@@ -6,8 +6,10 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -16,13 +18,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tecsup.murocampus.data.PostRepositoryRemote
 import com.tecsup.murocampus.data.remote.RetrofitClient
 import com.tecsup.murocampus.ui.BarraMuroCampus
+import com.tecsup.murocampus.ui.FondoEstrellas
 import com.tecsup.murocampus.ui.PantallaCrear
 import com.tecsup.murocampus.ui.PantallaDetalle
 import com.tecsup.murocampus.ui.PantallaLista
+import com.tecsup.murocampus.ui.theme.AmarilloStar
+import com.tecsup.murocampus.ui.theme.FondoEspacial
 import com.tecsup.murocampus.ui.theme.MuroCampusTheme
 import com.tecsup.murocampus.viewmodel.PostsViewModel
 import com.tecsup.murocampus.viewmodel.PostsViewModelFactory
@@ -51,30 +59,44 @@ class MainActivity : ComponentActivity() {
 
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
+                    containerColor = FondoEspacial,
                     topBar = { BarraMuroCampus() },
                     floatingActionButton = {
                         if (idSeleccionado == null && !creando) {
-                            FloatingActionButton(onClick = { creando = true }) {
-                                Text("+", fontSize = 28.sp)
+                            FloatingActionButton(
+                                onClick = { creando = true },
+                                containerColor = AmarilloStar,
+                                contentColor = FondoEspacial,
+                                shape = CutCornerShape(12.dp)
+                            ) {
+                                Text(
+                                    text = "+",
+                                    fontSize = 28.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    fontFamily = FontFamily.Monospace
+                                )
                             }
                         }
                     }
                 ) { innerPadding ->
-                    val id = idSeleccionado
-                    val relleno = Modifier.padding(innerPadding)
-                    when {
-                        creando -> PantallaCrear(vm = vm, modifier = relleno)
-                        id != null -> PantallaDetalle(
-                            vm = vm,
-                            id = id,
-                            modifier = relleno,
-                            onVolver = { idSeleccionado = null }
-                        )
-                        else -> PantallaLista(
-                            vm = vm,
-                            onPostClick = { idSeleccionado = it },
-                            modifier = relleno
-                        )
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        FondoEstrellas()
+                        val id = idSeleccionado
+                        val relleno = Modifier.padding(innerPadding)
+                        when {
+                            creando -> PantallaCrear(vm = vm, modifier = relleno)
+                            id != null -> PantallaDetalle(
+                                vm = vm,
+                                id = id,
+                                modifier = relleno,
+                                onVolver = { idSeleccionado = null }
+                            )
+                            else -> PantallaLista(
+                                vm = vm,
+                                onPostClick = { idSeleccionado = it },
+                                modifier = relleno
+                            )
+                        }
                     }
                 }
             }

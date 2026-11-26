@@ -10,17 +10,26 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.tecsup.murocampus.ui.theme.CianNeon
+import com.tecsup.murocampus.ui.theme.FondoEspacial
+import com.tecsup.murocampus.ui.theme.SuperficieOscura
 import com.tecsup.murocampus.viewmodel.PostsViewModel
 import com.tecsup.murocampus.viewmodel.UiState
 
@@ -38,12 +47,22 @@ fun PantallaLista(
         OutlinedTextField(
             value = textoBusqueda,
             onValueChange = { vm.buscar(it) },
-            label = { Text("Buscar por título") },
+            label = { Text("Buscar por título", fontFamily = FontFamily.Monospace) },
             singleLine = true,
+            shape = CutCornerShape(8.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = CianNeon,
+                unfocusedBorderColor = CianNeon.copy(alpha = 0.5f),
+                focusedLabelColor = CianNeon,
+                unfocusedLabelColor = Color(0xFFB0BEC5),
+                focusedTextColor = Color.White,
+                unfocusedTextColor = Color.White,
+                cursorColor = CianNeon
+            ),
             trailingIcon = {
                 if (textoBusqueda.isNotEmpty()) {
                     IconButton(onClick = { vm.buscar("") }) {
-                        Text("✕", fontWeight = FontWeight.Bold)
+                        Text("✕", fontWeight = FontWeight.Bold, color = CianNeon)
                     }
                 }
             },
@@ -64,6 +83,9 @@ fun PantallaLista(
                 is UiState.Exito -> if (e.datos.isEmpty()) {
                     Text(
                         text = "Sin publicaciones",
+                        color = CianNeon,
+                        fontFamily = FontFamily.Monospace,
+                        letterSpacing = 1.sp,
                         modifier = Modifier.align(Alignment.Center)
                     )
                 } else {
@@ -86,7 +108,7 @@ fun PantallaLista(
     }
 }
 
-// Fila desplazable: Todos, Usuario 1 ... Usuario 10 (el activo se ve relleno)
+// Fila desplazable: Todos, Usuario 1 ... Usuario 10 (el activo se ve relleno en cian)
 @Composable
 private fun FilaChips(seleccionado: Int?, onElegir: (Int?) -> Unit) {
     LazyRow(
@@ -94,17 +116,55 @@ private fun FilaChips(seleccionado: Int?, onElegir: (Int?) -> Unit) {
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         item {
+            val activo = seleccionado == null
             FilterChip(
-                selected = seleccionado == null,
+                selected = activo,
                 onClick = { onElegir(null) },
-                label = { Text("Todos") }
+                label = {
+                    Text(
+                        text = "Todos",
+                        fontFamily = FontFamily.Monospace,
+                        fontWeight = if (activo) FontWeight.Bold else FontWeight.Normal,
+                        color = if (activo) FondoEspacial else CianNeon
+                    )
+                },
+                shape = CutCornerShape(8.dp),
+                border = FilterChipDefaults.filterChipBorder(
+                    enabled = true,
+                    selected = activo,
+                    borderColor = CianNeon.copy(alpha = 0.5f),
+                    selectedBorderColor = CianNeon
+                ),
+                colors = FilterChipDefaults.filterChipColors(
+                    containerColor = SuperficieOscura,
+                    selectedContainerColor = CianNeon
+                )
             )
         }
         items((1..10).toList()) { usuario ->
+            val activo = seleccionado == usuario
             FilterChip(
-                selected = seleccionado == usuario,
+                selected = activo,
                 onClick = { onElegir(usuario) },
-                label = { Text("Usuario $usuario") }
+                label = {
+                    Text(
+                        text = "Usuario $usuario",
+                        fontFamily = FontFamily.Monospace,
+                        fontWeight = if (activo) FontWeight.Bold else FontWeight.Normal,
+                        color = if (activo) FondoEspacial else CianNeon
+                    )
+                },
+                shape = CutCornerShape(8.dp),
+                border = FilterChipDefaults.filterChipBorder(
+                    enabled = true,
+                    selected = activo,
+                    borderColor = CianNeon.copy(alpha = 0.5f),
+                    selectedBorderColor = CianNeon
+                ),
+                colors = FilterChipDefaults.filterChipColors(
+                    containerColor = SuperficieOscura,
+                    selectedContainerColor = CianNeon
+                )
             )
         }
     }
