@@ -28,6 +28,10 @@ class PostsViewModel(private val repo: PostRepository) : ViewModel() {
     private val _creado = MutableStateFlow<UiState<Post>?>(null)
     val creado: StateFlow<UiState<Post>?> = _creado.asStateFlow()
 
+    // null = aun no se pidio borrar
+    private val _borrado = MutableStateFlow<UiState<Unit>?>(null)
+    val borrado: StateFlow<UiState<Unit>?> = _borrado.asStateFlow()
+
     private val _detalle = MutableStateFlow<UiState<DetalleUi>>(UiState.Cargando)
     val detalle: StateFlow<UiState<DetalleUi>> = _detalle.asStateFlow()
 
@@ -63,8 +67,22 @@ class PostsViewModel(private val repo: PostRepository) : ViewModel() {
         _creado.value = null
     }
 
+    fun borrar(id: Int) {
+        viewModelScope.launch {
+            _borrado.value = UiState.Cargando
+            repo.borrar(id)
+                .onSuccess { _borrado.value = UiState.Exito(Unit) }
+                .onFailure { _borrado.value = UiState.Error(mensajeDe(it)) }
+        }
+    }
+
+    fun limpiarBorrado() {
+        _borrado.value = null
+    }
+
     // Dos llamadas a la vez (post y comentarios). Si una falla, todo el detalle es Error.
     fun abrir(id: Int) {
+        _borrado.value = null
         viewModelScope.launch {
             _detalle.value = UiState.Cargando
             coroutineScope {

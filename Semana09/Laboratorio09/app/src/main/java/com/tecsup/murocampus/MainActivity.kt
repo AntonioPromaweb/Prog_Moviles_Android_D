@@ -46,6 +46,7 @@ class MainActivity : ComponentActivity() {
                     idSeleccionado = null
                     creando = false
                     vm.limpiarCreacion()
+                    vm.limpiarBorrado()
                 }
 
                 Scaffold(
@@ -63,7 +64,12 @@ class MainActivity : ComponentActivity() {
                     val relleno = Modifier.padding(innerPadding)
                     when {
                         creando -> PantallaCrear(vm = vm, modifier = relleno)
-                        id != null -> PantallaDetalle(vm = vm, id = id, modifier = relleno)
+                        id != null -> PantallaDetalle(
+                            vm = vm,
+                            id = id,
+                            modifier = relleno,
+                            onVolver = { idSeleccionado = null }
+                        )
                         else -> PantallaLista(
                             vm = vm,
                             onPostClick = { idSeleccionado = it },
