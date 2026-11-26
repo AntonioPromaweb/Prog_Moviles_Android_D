@@ -14,7 +14,11 @@ import com.tecsup.murocampus.viewmodel.PostsViewModel
 import com.tecsup.murocampus.viewmodel.UiState
 
 @Composable
-fun PantallaLista(vm: PostsViewModel, modifier: Modifier = Modifier) {
+fun PantallaLista(
+    vm: PostsViewModel,
+    onPostClick: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
     val estado by vm.lista.collectAsStateWithLifecycle()
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -33,7 +37,7 @@ fun PantallaLista(vm: PostsViewModel, modifier: Modifier = Modifier) {
                         userId = post.userId,
                         titulo = post.title,
                         cuerpo = post.body,
-                        onClick = { }
+                        onClick = { onPostClick(post.id) }
                     )
                 }
             }
