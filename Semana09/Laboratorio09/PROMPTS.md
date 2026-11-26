@@ -1,7 +1,7 @@
 # PROMPTS.md — Fase 2 (con IA)
 
 Rama: `mejora-ia-semana09` · Herramienta: Gemini en Android Studio
-Alumno: Luis Antonio Vasquez
+Alumno: Luis Antonio Vasquez Flores
 
 En cada prompt le indiqué a Gemini las reglas del laboratorio (el ViewModel no usa Retrofit, `PostApi`,
 `HttpException` ni `Context`; ninguna pantalla llama a la API; nada de `GlobalScope`, `catch` vacío ni `http://`).

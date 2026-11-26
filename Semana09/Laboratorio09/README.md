@@ -1,7 +1,7 @@
 # MuroCampus
 
 **Laboratorio 09 · Servicio Web** — Programación en Móviles (Tecsup)
-**Alumno:** Luis Antonio Vasquez · **Docente:** Juan José León Suivon
+**Alumno:** Luis Antonio Vasquez Flores · **Docente:** Juan José León Suivon
 
 ## Descripción
 
