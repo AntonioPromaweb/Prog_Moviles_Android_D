@@ -6,6 +6,7 @@ import com.tecsup.avisoscampus.data.AvisosRepository
 import com.tecsup.avisoscampus.model.Aviso
 import com.tecsup.avisoscampus.model.Origen
 import com.tecsup.avisoscampus.model.PermisoUi
+import com.tecsup.avisoscampus.receiver.PosponerEventos
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -36,6 +37,14 @@ class AvisosViewModel(private val repo: AvisosRepository) : ViewModel() {
 
     private val _mensaje = MutableStateFlow<String?>(null)
     val mensaje: StateFlow<String?> = _mensaje.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            PosponerEventos.pedidos.collect {
+                recordarEn(10)
+            }
+        }
+    }
 
     fun permisoRespondido(concedido: Boolean) {
         _permiso.value = if (concedido) PermisoUi.Concedido else PermisoUi.Denegado
