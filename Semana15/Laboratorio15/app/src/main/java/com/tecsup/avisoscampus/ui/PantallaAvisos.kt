@@ -154,7 +154,12 @@ private fun EtiquetaPermiso(permiso: PermisoUi) {
 @Composable
 private fun TarjetaAvisos(vm: AvisosViewModel) {
     TarjetaBase("Avisos") {
-        // TODO Paso 3: botón "Mostrar aviso" -> vm.avisarAhora()
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Button(onClick = { vm.avisarAhora() }) { Text("Mostrar aviso") }
+        }
     }
 }
 
