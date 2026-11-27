@@ -65,6 +65,7 @@ fun PantallaAvisos(vm: AvisosViewModel) {
         if (Notificador.tienePermiso(contexto)) vm.permisoRespondido(true)
     }
 
+    val avisos by vm.avisos.collectAsState()
     val escuchando by vm.escuchandoAvion.collectAsState()
 
     DisposableEffect(escuchando) {
@@ -112,7 +113,7 @@ fun PantallaAvisos(vm: AvisosViewModel) {
             TarjetaAvisos(vm)
             TarjetaRecordatorio(vm)
             TarjetaReceptor(vm)
-            // TODO Paso 7: tarjeta Historial (HistorialAvisos)
+            HistorialAvisos(avisos)
         }
     }
 }
