@@ -123,7 +123,10 @@ fun PantallaAvisos(vm: AvisosViewModel) {
             TarjetaAvisos(vm)
             TarjetaRecordatorio(vm)
             TarjetaReceptor(vm)
-            HistorialAvisos(avisos)
+            HistorialAvisos(
+                avisos = avisos,
+                onBorrar = { vm.borrarHistorial() }
+            )
         }
     }
 }

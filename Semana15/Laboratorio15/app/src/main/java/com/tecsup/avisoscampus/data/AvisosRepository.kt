@@ -19,6 +19,7 @@ import java.util.Locale
 interface AvisosRepository {
     val avisos: Flow<List<Aviso>>
     suspend fun registrar(titulo: String, texto: String, origen: Origen): Aviso
+    suspend fun limpiar()
 }
 
 class AvisosRepositoryMemoria : AvisosRepository {
@@ -31,6 +32,10 @@ class AvisosRepositoryMemoria : AvisosRepository {
         val aviso = Aviso(siguiente++, titulo, texto, origen, hora)
         _avisos.value = listOf(aviso) + _avisos.value     // lo más reciente arriba
         return aviso
+    }
+
+    override suspend fun limpiar() {
+        _avisos.value = emptyList()
     }
 }
 
@@ -63,6 +68,12 @@ class AvisosRepositoryDataStore(
         }
 
         return nuevoAviso!!
+    }
+
+    override suspend fun limpiar() {
+        dataStore.edit { preferences ->
+            preferences.remove(keyAvisos)
+        }
     }
 
     private fun serializarAvisos(lista: List<Aviso>): String {
