@@ -1,23 +1,31 @@
 package com.tecsup.avisoscampus.ui.theme
 
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.lightColorScheme
+import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-private val EsquemaClaro = lightColorScheme(
-    primary = AzulTema,
-    onPrimary = Color.White,
-    background = FondoClaro,
-    onBackground = TextoOscuro,
-    surface = Color.White,
-    onSurface = TextoOscuro
+private val EsquemaEspacial = darkColorScheme(
+    primary = CianNeon,
+    onPrimary = NegroEspacial,
+    secondary = AmarilloAcento,
+    onSecondary = NegroEspacial,
+    tertiary = VioletaApoyo,
+    error = RojoPeligro,
+    onError = NegroEspacial,
+    background = NegroEspacial,
+    onBackground = TextoClaro,
+    surface = AzulEspacial,
+    onSurface = TextoClaro,
+    surfaceVariant = Color(0xFF152038),
+    onSurfaceVariant = TextoSecundarioEspacial,
+    outline = CianNeon
 )
 
 @Composable
 fun AvisosCampusTheme(content: @Composable () -> Unit) {
     MaterialTheme(
-        colorScheme = EsquemaClaro,
+        colorScheme = EsquemaEspacial,
         typography = Typography,
         content = content
     )

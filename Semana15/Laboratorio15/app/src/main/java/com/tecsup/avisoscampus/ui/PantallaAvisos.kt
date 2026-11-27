@@ -3,52 +3,70 @@ package com.tecsup.avisoscampus.ui
 import android.Manifest
 import android.content.Intent
 import android.content.IntentFilter
-import android.provider.Settings
 import android.os.Build
+import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.Surface
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.graphics.Color
-import com.tecsup.avisoscampus.model.PermisoUi
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import com.tecsup.avisoscampus.model.PermisoUi
 import com.tecsup.avisoscampus.notificacion.Notificador
 import com.tecsup.avisoscampus.receiver.ModoAvionReceiver
+import com.tecsup.avisoscampus.ui.theme.AmarilloAcento
+import com.tecsup.avisoscampus.ui.theme.AzulEspacial
+import com.tecsup.avisoscampus.ui.theme.CianNeon
+import com.tecsup.avisoscampus.ui.theme.RojoPeligro
+import com.tecsup.avisoscampus.ui.theme.TextoClaro
+import com.tecsup.avisoscampus.ui.theme.TextoSecundarioEspacial
+import com.tecsup.avisoscampus.ui.theme.VerdePermitido
 import com.tecsup.avisoscampus.viewmodel.AvisosViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PantallaAvisos(vm: AvisosViewModel) {
-    // Dentro de PantallaAvisos (ya viene hecho):
     val contexto = LocalContext.current
     LaunchedEffect(Unit) {
         vm.eventos.collect { aviso ->
@@ -94,39 +112,58 @@ fun PantallaAvisos(vm: AvisosViewModel) {
         }
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("AvisosCampus", fontWeight = FontWeight.Bold) },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary
-                )
-            )
-        }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .padding(padding)
-                .verticalScroll(rememberScrollState())
-                .padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            TarjetaPermiso(vm, pedirPermiso)
-            mensaje?.let { texto ->
-                MensajeError(texto) {
-                    val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
-                        .putExtra(Settings.EXTRA_APP_PACKAGE, contexto.packageName)
-                    contexto.startActivity(intent)
+    Box(modifier = Modifier.fillMaxSize()) {
+        FondoEstrellas()
+        Scaffold(
+            containerColor = Color.Transparent,
+            topBar = {
+                Column {
+                    TopAppBar(
+                        title = {
+                            Text(
+                                "AVISOSCAMPUS",
+                                fontWeight = FontWeight.Black,
+                                letterSpacing = 2.sp
+                            )
+                        },
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = AzulEspacial.copy(alpha = 0.9f),
+                            titleContentColor = AmarilloAcento
+                        )
+                    )
+                    Canvas(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(1.5.dp)
+                    ) {
+                        drawRect(color = CianNeon)
+                    }
                 }
             }
-            TarjetaAvisos(vm)
-            TarjetaRecordatorio(vm)
-            TarjetaReceptor(vm)
-            HistorialAvisos(
-                avisos = avisos,
-                onBorrar = { vm.borrarHistorial() }
-            )
+        ) { padding ->
+            Column(
+                modifier = Modifier
+                    .padding(padding)
+                    .verticalScroll(rememberScrollState())
+                    .padding(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                TarjetaPermiso(vm, pedirPermiso)
+                mensaje?.let { texto ->
+                    MensajeError(texto) {
+                        val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+                            .putExtra(Settings.EXTRA_APP_PACKAGE, contexto.packageName)
+                        contexto.startActivity(intent)
+                    }
+                }
+                TarjetaAvisos(vm)
+                TarjetaRecordatorio(vm)
+                TarjetaReceptor(vm)
+                HistorialAvisos(
+                    avisos = avisos,
+                    onBorrar = { vm.borrarHistorial() }
+                )
+            }
         }
     }
 }
@@ -135,14 +172,16 @@ fun PantallaAvisos(vm: AvisosViewModel) {
 private fun TarjetaBase(titulo: String, contenido: @Composable () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        shape = CutCornerShape(10.dp),
+        border = BorderStroke(1.dp, CianNeon.copy(alpha = 0.4f)),
+        colors = CardDefaults.cardColors(containerColor = AzulEspacial.copy(alpha = 0.9f))
     ) {
-        Column(modifier = Modifier.padding(12.dp)) {
+        Column(modifier = Modifier.padding(14.dp)) {
             Text(
                 text = titulo,
-                style = MaterialTheme.typography.titleSmall,
+                style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
+                color = CianNeon
             )
             contenido()
         }
@@ -162,10 +201,15 @@ private fun TarjetaPermiso(vm: AvisosViewModel, onPermitir: () -> Unit) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text("Estado:")
+                Text("Estado:", color = TextoClaro)
                 EtiquetaPermiso(permiso)
             }
-            Button(onClick = onPermitir) { Text("Permitir notificaciones") }
+            BotonAnimado(
+                onClick = onPermitir,
+                tipo = TipoBoton.RELLENO
+            ) {
+                Text("Permitir notificaciones")
+            }
         }
     }
 }
@@ -179,35 +223,45 @@ private fun MensajeError(mensaje: String, onAbrirAjustes: () -> Unit) {
     ) {
         Surface(
             modifier = Modifier.fillMaxWidth(),
-            color = Color(0xFFFBE0E0),
-            shape = RoundedCornerShape(12.dp)
+            color = Color(0xFF3B1218),
+            shape = CutCornerShape(8.dp),
+            border = BorderStroke(1.dp, RojoPeligro)
         ) {
             Text(
                 text = mensaje,
-                color = Color(0xFFB71C1C),
+                color = RojoPeligro,
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(12.dp)
             )
         }
-        OutlinedButton(onClick = onAbrirAjustes) { Text("Abrir ajustes") }
+        BotonAnimado(
+            onClick = onAbrirAjustes,
+            tipo = TipoBoton.CON_BORDE
+        ) {
+            Text("Abrir ajustes")
+        }
     }
 }
 
 @Composable
 private fun EtiquetaPermiso(permiso: PermisoUi) {
-    val (texto, fondo, color) = when (permiso) {
-        PermisoUi.SinPedir -> Triple("Sin pedir", Color(0xFFE0E0E0), Color(0xFF616161))
-        PermisoUi.Concedido -> Triple("Permitido", Color(0xFFD7F0DC), Color(0xFF1B5E20))
-        PermisoUi.Denegado -> Triple("Denegado", Color(0xFFFBE0E0), Color(0xFFB71C1C))
+    val (texto, fondoObjetivo, colorObjetivo) = when (permiso) {
+        PermisoUi.SinPedir -> Triple("Sin pedir", Color(0xFF1E2A3A), TextoSecundarioEspacial)
+        PermisoUi.Concedido -> Triple("Permitido", Color(0xFF0F3D20), VerdePermitido)
+        PermisoUi.Denegado -> Triple("Denegado", Color(0xFF4D1212), RojoPeligro)
     }
-    Surface(color = fondo, shape = RoundedCornerShape(50)) {
+
+    val fondoAnimado by animateColorAsState(targetValue = fondoObjetivo, label = "FondoPermiso")
+    val colorTextoAnimado by animateColorAsState(targetValue = colorObjetivo, label = "ColorTextoPermiso")
+
+    Surface(color = fondoAnimado, shape = CutCornerShape(4.dp)) {
         Text(
             text = texto,
-            color = color,
+            color = colorTextoAnimado,
             fontWeight = FontWeight.Bold,
             style = MaterialTheme.typography.labelMedium,
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 2.dp)
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
         )
     }
 }
@@ -219,7 +273,12 @@ private fun TarjetaAvisos(vm: AvisosViewModel) {
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Button(onClick = { vm.avisarAhora() }) { Text("Mostrar aviso") }
+            BotonAnimado(
+                onClick = { vm.avisarAhora() },
+                tipo = TipoBoton.RELLENO
+            ) {
+                Text("Mostrar aviso")
+            }
         }
     }
 }
@@ -234,16 +293,42 @@ private fun TarjetaRecordatorio(vm: AvisosViewModel) {
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Button(
+                BotonAnimado(
                     onClick = { vm.recordarEn() },
-                    enabled = faltan == null
-                ) { Text("Recordar en 10 s") }
-                OutlinedButton(
+                    enabled = faltan == null,
+                    tipo = TipoBoton.RELLENO
+                ) {
+                    Text("Recordar en 10 s")
+                }
+                BotonAnimado(
                     onClick = { vm.cancelarRecordatorio() },
-                    enabled = faltan != null
-                ) { Text("Cancelar") }
+                    enabled = faltan != null,
+                    tipo = TipoBoton.CON_BORDE
+                ) {
+                    Text("Cancelar")
+                }
             }
-            faltan?.let { Text("Faltan $it s", fontWeight = FontWeight.Bold) }
+            faltan?.let { segundos ->
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("Faltan ", fontWeight = FontWeight.Bold, color = TextoClaro)
+                    AnimatedContent(
+                        targetState = segundos,
+                        transitionSpec = {
+                            (slideInVertically { height -> -height } + fadeIn()) togetherWith
+                                    (slideOutVertically { height -> height } + fadeOut())
+                        },
+                        label = "FaltanAnimacion"
+                    ) { num ->
+                        Text(
+                            text = "$num",
+                            fontWeight = FontWeight.Black,
+                            color = AmarilloAcento,
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
+                    Text(" s", fontWeight = FontWeight.Bold, color = TextoClaro)
+                }
+            }
         }
     }
 }
@@ -256,11 +341,21 @@ private fun TarjetaReceptor(vm: AvisosViewModel) {
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Escuchar el modo avión", modifier = Modifier.weight(1f))
-            Switch(checked = escuchando, onCheckedChange = { vm.cambiarEscucha(it) })
+            Text("Escuchar el modo avión", color = TextoClaro, modifier = Modifier.weight(1f))
+            Switch(
+                checked = escuchando,
+                onCheckedChange = { vm.cambiarEscucha(it) },
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = AmarilloAcento,
+                    checkedTrackColor = CianNeon,
+                    uncheckedThumbColor = TextoSecundarioEspacial,
+                    uncheckedTrackColor = Color(0xFF1B263B)
+                )
+            )
         }
         Text(
             "Activa o desactiva el modo avión del celular",
+            color = TextoSecundarioEspacial,
             style = MaterialTheme.typography.bodySmall
         )
     }
