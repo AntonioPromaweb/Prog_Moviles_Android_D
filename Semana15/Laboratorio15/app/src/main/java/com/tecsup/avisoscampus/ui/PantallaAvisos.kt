@@ -1,5 +1,18 @@
 package com.tecsup.avisoscampus.ui
 
+import android.Manifest
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
+import com.tecsup.avisoscampus.model.PermisoUi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -35,6 +48,24 @@ fun PantallaAvisos(vm: AvisosViewModel) {
         }
     }
 
+    val lanzador = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { concedido ->
+        vm.permisoRespondido(concedido)
+    }
+
+    LaunchedEffect(Unit) {
+        if (Notificador.tienePermiso(contexto)) vm.permisoRespondido(true)
+    }
+
+    val pedirPermiso = {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            lanzador.launch(Manifest.permission.POST_NOTIFICATIONS)
+        } else {
+            vm.permisoRespondido(true)
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -53,7 +84,7 @@ fun PantallaAvisos(vm: AvisosViewModel) {
                 .padding(12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            TarjetaPermiso(vm)
+            TarjetaPermiso(vm, pedirPermiso)
             TarjetaAvisos(vm)
             TarjetaRecordatorio(vm)
             TarjetaReceptor(vm)
@@ -81,10 +112,42 @@ private fun TarjetaBase(titulo: String, contenido: @Composable () -> Unit) {
 }
 
 @Composable
-private fun TarjetaPermiso(vm: AvisosViewModel) {
+private fun TarjetaPermiso(vm: AvisosViewModel, onPermitir: () -> Unit) {
+    val permiso by vm.permiso.collectAsState()
     TarjetaBase("Permiso de notificaciones") {
-        // TODO Paso 2: etiqueta (Sin pedir / Permitido / Denegado) y botón "Permitir notificaciones"
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text("Estado:")
+                EtiquetaPermiso(permiso)
+            }
+            Button(onClick = onPermitir) { Text("Permitir notificaciones") }
+        }
         // TODO Paso 8: mensaje de error y botón "Abrir ajustes"
+    }
+}
+
+@Composable
+private fun EtiquetaPermiso(permiso: PermisoUi) {
+    val (texto, fondo, color) = when (permiso) {
+        PermisoUi.SinPedir -> Triple("Sin pedir", Color(0xFFE0E0E0), Color(0xFF616161))
+        PermisoUi.Concedido -> Triple("Permitido", Color(0xFFD7F0DC), Color(0xFF1B5E20))
+        PermisoUi.Denegado -> Triple("Denegado", Color(0xFFFBE0E0), Color(0xFFB71C1C))
+    }
+    Surface(color = fondo, shape = RoundedCornerShape(50)) {
+        Text(
+            text = texto,
+            color = color,
+            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.labelMedium,
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 2.dp)
+        )
     }
 }
 
