@@ -3,6 +3,7 @@ package com.tecsup.avisoscampus.ui
 import android.Manifest
 import android.content.Intent
 import android.content.IntentFilter
+import android.provider.Settings
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -37,6 +38,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.tecsup.avisoscampus.notificacion.Notificador
@@ -51,7 +53,7 @@ fun PantallaAvisos(vm: AvisosViewModel) {
     LaunchedEffect(Unit) {
         vm.eventos.collect { aviso ->
             val mostrado = Notificador.mostrar(contexto, aviso)
-            // TODO Paso 8: si no se mostró, avisar al ViewModel
+            if (!mostrado) vm.noSePudoMostrar()
         }
     }
 
@@ -66,6 +68,7 @@ fun PantallaAvisos(vm: AvisosViewModel) {
     }
 
     val avisos by vm.avisos.collectAsState()
+    val mensaje by vm.mensaje.collectAsState()
     val escuchando by vm.escuchandoAvion.collectAsState()
 
     DisposableEffect(escuchando) {
@@ -110,6 +113,13 @@ fun PantallaAvisos(vm: AvisosViewModel) {
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             TarjetaPermiso(vm, pedirPermiso)
+            mensaje?.let { texto ->
+                MensajeError(texto) {
+                    val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+                        .putExtra(Settings.EXTRA_APP_PACKAGE, contexto.packageName)
+                    contexto.startActivity(intent)
+                }
+            }
             TarjetaAvisos(vm)
             TarjetaRecordatorio(vm)
             TarjetaReceptor(vm)
@@ -154,7 +164,30 @@ private fun TarjetaPermiso(vm: AvisosViewModel, onPermitir: () -> Unit) {
             }
             Button(onClick = onPermitir) { Text("Permitir notificaciones") }
         }
-        // TODO Paso 8: mensaje de error y botón "Abrir ajustes"
+    }
+}
+
+@Composable
+private fun MensajeError(mensaje: String, onAbrirAjustes: () -> Unit) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            color = Color(0xFFFBE0E0),
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            Text(
+                text = mensaje,
+                color = Color(0xFFB71C1C),
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(12.dp)
+            )
+        }
+        OutlinedButton(onClick = onAbrirAjustes) { Text("Abrir ajustes") }
     }
 }
 
