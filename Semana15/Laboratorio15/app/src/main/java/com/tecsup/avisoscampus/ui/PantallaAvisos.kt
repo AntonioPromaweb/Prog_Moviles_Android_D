@@ -1,6 +1,8 @@
 package com.tecsup.avisoscampus.ui
 
 import android.Manifest
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -25,16 +27,20 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import com.tecsup.avisoscampus.notificacion.Notificador
+import com.tecsup.avisoscampus.receiver.ModoAvionReceiver
 import com.tecsup.avisoscampus.viewmodel.AvisosViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -57,6 +63,23 @@ fun PantallaAvisos(vm: AvisosViewModel) {
 
     LaunchedEffect(Unit) {
         if (Notificador.tienePermiso(contexto)) vm.permisoRespondido(true)
+    }
+
+    val escuchando by vm.escuchandoAvion.collectAsState()
+
+    DisposableEffect(escuchando) {
+        if (escuchando) {
+            val receptor = ModoAvionReceiver { activo -> vm.alCambiarModoAvion(activo) }
+            ContextCompat.registerReceiver(
+                contexto,
+                receptor,
+                IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED),
+                ContextCompat.RECEIVER_NOT_EXPORTED
+            )
+            onDispose { contexto.unregisterReceiver(receptor) }
+        } else {
+            onDispose { }
+        }
     }
 
     val pedirPermiso = {
@@ -190,7 +213,18 @@ private fun TarjetaRecordatorio(vm: AvisosViewModel) {
 
 @Composable
 private fun TarjetaReceptor(vm: AvisosViewModel) {
+    val escuchando by vm.escuchandoAvion.collectAsState()
     TarjetaBase("Receptor de anuncios") {
-        // TODO Paso 6: Switch "Escuchar el modo avión"
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text("Escuchar el modo avión", modifier = Modifier.weight(1f))
+            Switch(checked = escuchando, onCheckedChange = { vm.cambiarEscucha(it) })
+        }
+        Text(
+            "Activa o desactiva el modo avión del celular",
+            style = MaterialTheme.typography.bodySmall
+        )
     }
 }
