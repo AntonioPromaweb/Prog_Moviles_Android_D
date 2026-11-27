@@ -23,6 +23,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -165,8 +166,25 @@ private fun TarjetaAvisos(vm: AvisosViewModel) {
 
 @Composable
 private fun TarjetaRecordatorio(vm: AvisosViewModel) {
+    val faltan by vm.faltan.collectAsState()
     TarjetaBase("Recordatorio") {
-        // TODO Paso 5: botones "Recordar en 10 s" y "Cancelar", y texto "Faltan N s"
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Button(
+                    onClick = { vm.recordarEn() },
+                    enabled = faltan == null
+                ) { Text("Recordar en 10 s") }
+                OutlinedButton(
+                    onClick = { vm.cancelarRecordatorio() },
+                    enabled = faltan != null
+                ) { Text("Cancelar") }
+            }
+            faltan?.let { Text("Faltan $it s", fontWeight = FontWeight.Bold) }
+        }
     }
 }
 
